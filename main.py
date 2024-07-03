@@ -1,19 +1,23 @@
 import pytesseract
 from PIL import Image
 import sqlite3
-from pdf2image import convert_from_path
+import fitz 
 import os
 
-# Function to convert PDF to images
-def pdf_to_images(pdf_path):
-    return convert_from_path(pdf_path)
-
-# Function to perform OCR on an image
-def ocr_image(image_path):
-    text = pytesseract.image_to_string(Image.open(image_path))
+# Function to convert a single-page PDF to an image using PyMuPDF and then perform OCR
+def extract_text_from_pdf(pdf_path):
+    text = ""
+    try:
+        doc = fitz.open(pdf_path)
+        page = doc.load_page(0)  # Load the first page
+        pix = page.get_pixmap()  # Render the page to an image
+        image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+        text = pytesseract.image_to_string(image)
+    except Exception as e:
+        print(f"Error extracting text from PDF: {e}")
     return text
 
-# Expanded predefined category keywords in Dutch
+# Predefined category keywords in Dutch
 CATEGORY_KEYWORDS = {
     "financieel": ["factuur", "ontvangst", "betaling", "saldo", "rekening", "kosten", "uitgave", "inkomsten", "boeking", "bankafschrift"],
     "juridisch": ["contract", "overeenkomst", "wet", "naleving", "advocaat", "rechtszaak", "jurisprudentie", "getuigenis", "vonnis", "clausule"],
@@ -32,30 +36,32 @@ CATEGORY_KEYWORDS = {
     "entertainment": ["film", "serie", "acteur", "première", "bioscoop", "regisseur", "scene", "show", "comedy", "drama"]
 }
 
-# Function to determine categories based on keywords
-def determine_categories(text):
+# Function to determine the category based on the most matching keywords
+def determine_category_and_keywords(text):
     category_count = {category: 0 for category in CATEGORY_KEYWORDS}
+
     for category, keywords in CATEGORY_KEYWORDS.items():
         for keyword in keywords:
             if keyword.lower() in text.lower():
                 category_count[category] += 1
-                
+
     # Find the category with the most matches
     max_category = max(category_count, key=category_count.get)
-    
+
     if category_count[max_category] > 0:
-        return max_category
+        return max_category, CATEGORY_KEYWORDS[max_category]
     else:
-        return ""
+        return "", []
 
 # Save text and file path to SQLite database
-def save_to_db(file_path, text, categories, db_name='documents.db'):
+def save_to_db(file_path, text, category, keywords, db_name='documents.db'):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS documents
-                      (id INTEGER PRIMARY KEY, file_path TEXT UNIQUE NOT NULL, content TEXT, categories TEXT)''')
+                      (id INTEGER PRIMARY KEY, file_path TEXT UNIQUE NOT NULL, content TEXT, category TEXT, keywords TEXT)''')
     try:
-        cursor.execute('INSERT OR IGNORE INTO documents (file_path, content, categories) VALUES (?, ?, ?)', (file_path, text, categories))
+        keywords_str = ', '.join(keywords)
+        cursor.execute('INSERT OR IGNORE INTO documents (file_path, content, category, keywords) VALUES (?, ?, ?, ?)', (file_path, text, category, keywords_str))
     except sqlite3.IntegrityError:
         print("Duplicate entry found, skipping insert.")
     conn.commit()
@@ -64,17 +70,13 @@ def save_to_db(file_path, text, categories, db_name='documents.db'):
 # Process individual document
 def process_document(file_path):
     if file_path.lower().endswith('.pdf'):
-        images = pdf_to_images(file_path)
-        full_text = ""
-        for image in images:
-            text = pytesseract.image_to_string(image)
-            full_text += text
-        categories = determine_categories(full_text)
-        save_to_db(file_path, full_text, categories)
+        text = extract_text_from_pdf(file_path)
     else:
-        text = ocr_image(file_path)
-        categories = determine_categories(text)
-        save_to_db(file_path, text, categories)
+        image = Image.open(file_path)
+        text = pytesseract.image_to_string(image)
+
+    category, keywords = determine_category_and_keywords(text)
+    save_to_db(file_path, text, category, keywords)
 
 # Process all documents in the Docs folder
 def process_all_documents(folder_path='Docs'):
@@ -87,7 +89,7 @@ def process_all_documents(folder_path='Docs'):
 def display_records_by_category():
     conn = sqlite3.connect('documents.db')
     cursor = conn.cursor()
-    
+
     while True:
         # Display all categories
         clear_console()
@@ -95,32 +97,34 @@ def display_records_by_category():
         for i, category in enumerate(CATEGORY_KEYWORDS.keys(), 1):
             print(f"{i}. {category}")
         print("0. Exit")
-        
+
         choice = int(input("Enter the number of the category you want to see: "))
-        
+
         if choice == 0:
             break
-        
+
         if 1 <= choice <= len(CATEGORY_KEYWORDS):
             selected_category = list(CATEGORY_KEYWORDS.keys())[choice - 1]
-            
-            cursor.execute('SELECT * FROM documents WHERE categories LIKE ?', (f'%{selected_category}%',))
+
+            cursor.execute('SELECT * FROM documents WHERE category = ?', (selected_category,))
             records = cursor.fetchall()
-            
+
             clear_console()
             if records:
                 for record in records:
                     print(f"ID: {record[0]}")
-                    print(f"Content: {record[1]}")
-                    print(f"Categories: {record[2]}\n")
-                    
+                    print(f"File Path: {record[1]}")
+                    print(f"Content: {record[2]}")
+                    print(f"Category: {record[3]}")
+                    print(f"Keywords: {record[4]}\n")
+
                 input("\n\nEnter any key to go back")
             else:
                 print(f"No records found for the category: {selected_category}")
                 input("\n\nEnter any key to go back")
         else:
             print("Invalid choice. Please try again.")
-    
+
     conn.close()
 
 def clear_console():

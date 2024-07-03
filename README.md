@@ -6,7 +6,7 @@ This Python application is designed to assist in the preservation and digitizati
 
 - **OCR Processing**: Uses Tesseract OCR to extract text from scanned newspaper images.
 - **Image Processing**: Utilizes the Pillow library to handle image conversions and preprocessing.
-- **PDF Conversion**: Converts images to PDF format using pdf2image and integrates OCR text for searchability.
+- **PDF Conversion**: Converts images to PDF format using PyMuPDF and integrates OCR text for searchability.
 - **Category Determination**: Categorizes the content based on predefined keywords in Dutch.
 - **Database Storage**: Stores metadata and processed data in a SQLite database for easy access.
 
@@ -45,6 +45,29 @@ This Python application is designed to assist in the preservation and digitizati
     pip install -r requirements.txt
     ```
 
+### Tesseract OCR Installation
+
+#### Windows
+
+1. Download the Tesseract installer from [UB Mannheim Tesseract at UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki).
+2. Run the installer and follow the installation instructions. Don't forget to install the language pack to support Dutch.
+3. [Add the Tesseract OCR executable to your system's PATH](https://youtu.be/Rb93uLXiTwA?si=vTJ-jZinbfabBk0K&t=249) in the System Environment Variables menu. Typically, the path is `C:\Program Files\Tesseract-OCR\tesseract.exe` (refer to the .Exe and NOT the folder). 
+
+#### macOS
+
+1. Use Homebrew to install Tesseract. If you don't have Homebrew installed, you can install it from [Homebrew](https://brew.sh/).
+    ```bash
+    brew install tesseract
+    ```
+
+#### Linux (Ubuntu/Debian)
+
+1. Install Tesseract using apt-get.
+    ```bash
+    sudo apt-get update
+    sudo apt-get install tesseract-ocr
+    ```
+
 ## Usage
 
 1. **Activate the Virtual Environment**
@@ -63,5 +86,5 @@ This Python application is designed to assist in the preservation and digitizati
     ```
 
 3. **Add Newspaper Scans**
-    - Place your scanned newspaper images in the `Docs` directory.
-    - The application will automatically process these images, extract the text, convert them to PDFs, categorize the content, and store the metadata in the SQLite database.
+    - Place your scanned newspaper images (pdf) in the `Docs` directory.
+    - The application will automatically process these PDFs, extract the text, categorize the content, and store the metadata in the SQLite database.
