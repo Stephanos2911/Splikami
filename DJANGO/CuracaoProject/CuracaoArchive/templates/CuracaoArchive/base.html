@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item dropdown">
+                <a href="#" class="dropdown-toggle">Splikami</a>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item"><a href="{% url 'technology' %}">Splikami</a></li>
+                </ul>
+            </li>
+            <li class="navbar-item"><a href="{% url 'technology' %}">Knowledge</a></li>
+            <li class="navbar-item dropdown">
+                <a href="#" class="dropdown-toggle">Education</a>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item"><a href="{% url 'technology' %}">Education</a></li>
+                </ul>
+            </li>
+            <li class="navbar-item"><a href="{% url 'technology' %}">Technology</a></li>
+            <li class="navbar-item"><a href="{% url 'guidance' %}">Guidance</a></li>
+            <li class="navbar-item"><a href="{% url 'information' %}">Information</a></li>
+            <li class="navbar-item"><a href="{% url 'sponsors' %}">Sponsors</a></li>
+            <li class="navbar-item"><a href="{% url 'splikami_online' %}">Splikami Online</a></li>
+            <li class="navbar-item"><a href="{% url 'contact' %}">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Services</h3>
+                <p>Splikami heeft verschillende ruimtes voor educatieve gelegenheden, bijvoorbeeld een workshop of cursus, een discussieavond.</p>
+                <p>Neem <a href="{% url 'contact' %}">contact</a> met ons op voor beschikbaarheid en tarieven.</p>
+            </div>
+            <div class="footer-column">
+                <h3>Projecten</h3>
+                <p>De projecten van Splikami zijn van belang voor de sociaal-maatschappelijke welzijn.</p>
+                <p><a href="#">Lopende projecten</a></p>
+                <p><a href="#">Archief</a></p>
+            </div>
+            <div class="footer-column">
+                <h3>Sponsor</h3>
+                <p>Dankzij <a href="#">onze sponsoren</a> kunnen wij onze projecten financieren.</p>
+                <p>Wilt u ons ook steunen? Neem dan <a href="{% url 'contact' %}">contact</a> met ons op of bel naar +599 9 462 67 67</p>
+            </div>
+            <div class="footer-column">
+                <h3>Werkgebied</h3>
+                <p>Fundashon Instituto Splikami is gevestigd in Wishi/Marchena en het werkgebied is heel Curaçao.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <a href="#">privacy policy</a>
+            <p>&copy; 2024 Splikami</p>
+        </div>
+    </footer>
+</body>
+</html>

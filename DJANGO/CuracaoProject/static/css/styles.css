@@ -1,0 +1,138 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+}
+
+.navbar-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+.navbar-item {
+    padding: 14px 20px;
+}
+
+.navbar-item a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.navbar-item a:hover {
+    background-color: #575757;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle::after {
+    content: ' ▼';
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 12px 16px;
+}
+
+.dropdown-menu .dropdown-item a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-menu .dropdown-item a:hover {
+    background-color: #575757;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.footer {
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.footer-container {
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 0;
+    text-align: left;
+    margin-bottom: 60px;
+}
+
+
+.footer-column {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-column h3 {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.footer-column p, .footer-column a {
+    color: #ccc;
+    margin: 5px 0;
+    text-decoration: none;
+}
+
+.footer-column a { 
+    color: teal;
+    margin: 5px 0;
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    border-top: 1px solid #575757;
+    padding-top: 10px;
+}
+
+.footer-bottom a {
+    color: teal;
+    text-decoration: none;
+}
+
+.footer-bottom a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer-bottom p {
+    margin: 5px 0;
+    color: white;
+}
