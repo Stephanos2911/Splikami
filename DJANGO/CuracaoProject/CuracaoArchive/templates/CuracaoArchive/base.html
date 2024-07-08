@@ -8,30 +8,27 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <ul class="navbar-menu">
-            <li class="navbar-item dropdown">
-                <a href="#" class="dropdown-toggle">Splikami</a>
-                <ul class="dropdown-menu">
-                    <li class="dropdown-item"><a href="{% url 'technology' %}">Splikami</a></li>
-                </ul>
-            </li>
-            <li class="navbar-item"><a href="{% url 'technology' %}">Knowledge</a></li>
-            <li class="navbar-item dropdown">
-                <a href="#" class="dropdown-toggle">Education</a>
-                <ul class="dropdown-menu">
-                    <li class="dropdown-item"><a href="{% url 'technology' %}">Education</a></li>
-                </ul>
-            </li>
-            <li class="navbar-item"><a href="{% url 'technology' %}">Technology</a></li>
-            <li class="navbar-item"><a href="{% url 'guidance' %}">Guidance</a></li>
-            <li class="navbar-item"><a href="{% url 'information' %}">Information</a></li>
-            <li class="navbar-item"><a href="{% url 'sponsors' %}">Sponsors</a></li>
-            <li class="navbar-item"><a href="{% url 'splikami_online' %}">Splikami Online</a></li>
-            <li class="navbar-item"><a href="{% url 'contact' %}">Contact</a></li>
-        </ul>
-    </nav>
+     <!-- Navbar -->
+     <div class="navbar">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'technology' %}">Knowledge</a>
+        <div class="dropdown">
+            <button class="dropbtn">Education 
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{% url 'education' %}">Education</a>
+                <a href="{% url 'education' %}">Education</a>
+                <a href="{% url 'education' %}">Education</a>
+            </div>
+        </div>
+        <a href="{% url 'technology' %}">Technology</a>
+        <a href="{% url 'guidance' %}">Guidance</a>
+        <a href="{% url 'information' %}">Information</a>
+        <a href="{% url 'sponsors' %}">Sponsors</a>
+        <a href="{% url 'splikami_online' %}">Splikami Online</a>
+        <a href="{% url 'contact' %}">Contact</a>
+    </div>
 
     <!-- Content -->
     <div class="content">
