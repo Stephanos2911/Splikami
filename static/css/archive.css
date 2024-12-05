@@ -1,0 +1,11 @@
+.level {
+    align-items: center;
+}
+
+.level-item .field {
+    margin-bottom: 0;
+}
+
+.level-item .label {
+    margin-bottom: 0;
+}

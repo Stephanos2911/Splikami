@@ -1,0 +1,82 @@
+{% extends 'SplikamiApp/base.html' %}
+
+{% load static %}
+
+{% block title %}Education | Splikami{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/course.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+      <!-- Main Title -->
+      <h1 class="title">Educatie</h1>
+  
+      <!-- Introduction Section -->
+      <div class="content">
+        <p>
+          Stichting Splikami is een educatief faciliteitencentrum in het hart van de wijk Marchena. Met de nieuwste technologische ontwikkelingen en een focus op “alternatief onderwijs,” richten we ons op de (buurt/wijk) samenleving, in het bijzonder op ongeschoolde, werkeloze, kwetsbare jongeren en ouderen die op een of andere manier zijn afgesloten van nieuwe technologische en educatieve ontwikkelingen.
+        </p>
+      </div>
+  
+      <!-- EMI Section with Background -->
+      <div class="columns is-vcentered has-background-light p-5">
+        <div class="column is-half  ">
+          <h2 class="title is-4">EMI: “Eduká Mi Identidat”</h2>
+          <p class="content">
+            Dit project helpt leerlingen uit het Funderend Onderwijs bij hun leertraject door hen intensievere educatieve aandacht te geven. Deze methode biedt een sterkere basis voor het verwerken van informatie. Door te doen en te beleven in plaats van simpelweg uit het hoofd te leren, wordt informatie beter begrepen. Leerlingen die deze methode hebben gevolgd, behalen hogere scores in hun vervolgonderwijs.
+          </p>
+          <p class="content">
+            Denk je in aanmerking te komen voor een EMI-opleiding? Neem contact met ons op om de mogelijkheden te bespreken.
+          </p>
+          <div class="buttons">
+            <button class="button is-primary is-rounded" id="emi-contact-drawer-trigger">Neem Contact Op</button>
+          </div>
+        </div>
+        <div class="column is-half">
+          <figure class="image is-4by3">
+            <img src="emi_image_url" alt="EMI Project">
+          </figure>
+        </div>
+      </div>  
+  
+      <!-- AMI Section with Background -->
+      <div class="columns is-vcentered p-5">
+        <div class="column is-half">
+          <figure class="image is-4by3">
+            <img src="ami_image_url" alt="AMI Project">
+          </figure>
+        </div>
+        <div class="column is-half">
+          <h2 class="title is-4">AMI: Abilidat Máksimo for di mes Identidat</h2>
+          <p class="content">
+            Stichting Splikami biedt opleidingen en trainingen gericht op ongeschoolde, werkeloze, kwetsbare jongeren en ouderen. Onze aanpak, die technologie en onderwijs combineert, richt zich op het brengen van opleiding, kennisoverdracht, en technologische toepassingen binnen het bereik van de gemeenschap.
+          </p>
+          <p class="content">
+            Het succes van onze opleidingen ligt in het ‘anders geven van onderwijs’. Door een methodiek te gebruiken waarin werken en leren worden geïntegreerd, kunnen deelnemers technologie en arbeidsprocessen ervaren en begrijpen.
+          </p>
+          <p class="content">
+            Denk je in aanmerking te komen voor een AMI-opleiding? Neem contact met ons op om de mogelijkheden te bespreken.
+          </p>
+          <div class="buttons">
+            <button class="button is-primary is-rounded" id="ami-contact-drawer-trigger">Neem Contact Op</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    document.getElementById('emi-contact-drawer-trigger').addEventListener('click', function() {
+      document.getElementById('contact-drawer-btn').click();
+    });
+  
+    document.getElementById('ami-contact-drawer-trigger').addEventListener('click', function() {
+      document.getElementById('contact-drawer-btn').click();
+    });
+  </script>
+  
+{% endblock %}

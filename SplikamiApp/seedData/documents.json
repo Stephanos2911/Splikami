@@ -1,0 +1,18 @@
+[
+    {
+        "filename": "example1.pdf",
+        "title": "Example Document 1",
+        "publish_date": "2023-10-01",
+        "collection": "Example Collection",
+        "rubrics": ["Rubric1", "Rubric2"],
+        "subjects": ["Subject1", "Subject2"]
+    },
+    {
+        "filename": "example2.jpg",
+        "title": "Example Document 2",
+        "publish_date": "2023-10-02",
+        "collection": "Example Collection",
+        "rubrics": ["Rubric3"],
+        "subjects": ["Subject3"]
+    }
+]

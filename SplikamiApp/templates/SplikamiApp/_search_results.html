@@ -1,0 +1,89 @@
+<style>
+    .box {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .media-left .image {
+        max-width: 64px;
+        max-height: 64px;
+        overflow: hidden;
+    }
+
+    .media-left img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+
+    .content {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .search-result {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .search-result:hover .box {
+        background-color: #f5f5f5;
+    }
+
+    .meta-info {
+        margin-top: 0.5rem;
+        color: #6c757d; /* A subtle grey for meta information */
+        font-size: 0.875rem; /* Slightly smaller text for meta */
+    }
+
+    .meta-info .tag {
+        background-color: #e9ecef; /* Light grey background for tags */
+        border-radius: 3px;
+        padding: 0.25rem 0.5rem;
+        font-weight: bold;
+        margin-right: 0.5rem;
+        font-size: 0.75rem;
+        color: #495057; /* Darker grey for text */
+    }
+</style>
+
+{% if results %}
+    {% for result in results %}
+    <a href="{% if result.type == 'document' %}{% url 'view_document' result.id %}{% elif result.type == 'page' %}{% url 'view_document_page' result.document_id result.page_number %}{% endif %}" class="search-result">
+        <div class="box">
+            <article class="media">
+                <div class="media-left">
+                    {% if result.thumbnail_url %}
+                    <figure class="image is-64x64">
+                        <img src="{{ result.thumbnail_url }}" alt="Thumbnail">
+                    </figure>
+                    {% endif %}
+                </div>
+                <div class="media-content">
+                    <div class="content">
+                        <p>
+                            <strong>{{ result.title|safe }}</strong>
+                            {% if result.type == 'document' %}
+                                <div class="meta-info">
+                                    <span class="tag">Publicatiedatum: {{ result.publish_date|date:"d F Y" }}</span>
+                                    <span class="tag">Pagina's: {{ result.page_count }}</span>
+                                </div>
+                            {% endif %}
+                            {% if result.type == 'page' %}
+                                <br>
+                                <small>{{ result.snippet|safe }}</small>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+            </article>
+        </div>
+    </a>
+    {% endfor %}
+{% else %}
+    <p>Geen resultaten gevonden.</p>
+{% endif %}

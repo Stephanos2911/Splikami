@@ -1,0 +1,217 @@
+{% extends 'SplikamiApp/base.html' %}
+
+{% load static %}
+
+{% block title %}Fundashon Splikami{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Our Mission Section -->
+<section class="section">
+  <div class="container">
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <h2 class="title">Onze Missie</h2>
+        <p class="content">
+          Stichting Splikami zet zich in om kwetsbare jongeren en ouderen in de wijken Wishi en Marchena te ondersteunen. Door middel van innovatieve onderwijsmethoden en toegang tot technologie, streven we ernaar om deze gemeenschappen te empoweren en hen de middelen te geven voor een betere toekomst.
+        </p>
+      </div>
+      <div class="column is-one-third">
+        <figure class="image is-4by3">
+          <img src="mission_image_url" alt="Missie afbeelding">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- History Section -->
+<section class="section">
+  <div class="container">
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <figure class="image is-4by3">
+          <img src="{% static 'images/SplikamiGebouw.jpg' %}" alt="Splikami gebouw">
+        </figure>
+      </div>
+      <div class="column is-half">
+        <h2 class="title">Onze Geschiedenis</h2>
+        <p class="content">
+          Sinds 2009 werkt Fundashon Instituto Splikami aan het verbeteren van de levens van wijkbewoners door middel van alternatieve educatie en technologische ontwikkeling. We bieden een veilige en georganiseerde omgeving waar leren en technologie hand in hand gaan, met als doel persoonlijke en professionele groei te stimuleren.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<!-- Values Section -->
+<section class="section">
+  <div class="container">
+      <h1 class="title has-text-centered">Onze Waarden</h1>
+      <div class="columns is-multiline">
+          <div class="column is-one-third">
+              <div class="card has-text-centered">
+                  <div class="card-content">
+                      <span class="icon is-large has-text-primary">
+                          <i class="fas fa-balance-scale fa-2x"></i>
+                      </span>
+                      <h2 class="title is-5 mt-3">Integriteit</h2>
+                      <p class="content">
+                          Wij handelen altijd met de hoogste mate van eerlijkheid en transparantie in al onze interacties met zowel de gemeenschap als onze partners.
+                      </p>
+                  </div>
+              </div>
+          </div>
+
+          <div class="column is-one-third">
+              <div class="card has-text-centered">
+                  <div class="card-content">
+                      <span class="icon is-large has-text-primary">
+                          <i class="fas fa-heart fa-2x"></i>
+                      </span>
+                      <h2 class="title is-5 mt-3">Mededogen</h2>
+                      <p class="content">
+                          Mededogen vormt de kern van ons werk; we benaderen elk individu met het hoogste respect en zorgvuldigheid.
+                      </p>
+                  </div>
+              </div>
+          </div>
+
+          <div class="column is-one-third">
+              <div class="card has-text-centered">
+                  <div class="card-content">
+                      <span class="icon is-large has-text-primary">
+                          <i class="fas fa-hands-helping fa-2x"></i>
+                      </span>
+                      <h2 class="title is-5 mt-3">Samenwerking</h2>
+                      <p class="content">
+                          Door nauwe samenwerking met lokale partners en vrijwilligers, vergroten we onze impact en realiseren we grotere resultaten.
+                      </p>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+
+<!-- Team Section -->
+
+
+<!-- Sponsors Section -->
+<section class="section">
+  <div class="container">
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <h2 class="title">Onze Sponsoren</h2>
+        <p class="content">
+          Bij Splikami zijn we trots op de steun van onze sponsors, die een cruciale rol spelen in het mogelijk maken van onze programma's en activiteiten. Dankzij hun ondersteuning kunnen we de gemeenschappen in Wishi en Marchena blijven voorzien van onderwijs, technologie en persoonlijke ontwikkeling.
+        </p>     
+        <p class="content">
+           Bovendien hebben we, dankzij de financiële steun van lokale overheden en ontwikkelingsfondsen, de afgelopen jaren meerdere sociaal-maatschappelijke projecten kunnen realiseren op Curaçao. Ook u kunt ons helpen om onze projecten te financieren en bij te dragen aan de ontwikkeling van onze gemeenschap.
+        </p>       
+      </div>
+      <div class="column is-half">
+        <div class="columns is-multiline is-centered is-mobile">
+          <!-- Logo 1 -->
+          <div class="column is-one-third-mobile is-one-third-tablet is-one-third-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/redasosial.jpg' %}" alt="Redasocial logo">
+            </figure>
+          </div>
+          <!-- Logo 2 -->
+          <div class="column is-one-third-mobile is-one-third-tablet is-one-third-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/The-Curacao-Island-Logo-Square.png' %}" alt="The Curacao Island logo">
+            </figure>
+          </div>
+          <!-- Logo 3 -->
+          <div class="column is-one-third-mobile is-one-third-tablet is-one-third-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/nilda-pinto.png' %}" alt="Nilda Pinto logo">
+            </figure>
+          </div>
+          <!-- Logo 4 -->
+          <div class="column is-one-third-mobile is-one-quarter-tablet is-one-quarter-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/logo-curadoet.png' %}" alt="Curadoet logo">
+            </figure>
+          </div>
+          <!-- Logo 5 -->
+          <div class="column is-one-third-mobile is-one-quarter-tablet is-one-quarter-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/MCBLogo.jpg' %}" alt="MCB logo">
+            </figure>
+          </div>
+          <!-- Logo 6 -->
+          <div class="column is-one-third-mobile is-one-quarter-tablet is-one-quarter-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/samenwerkendefondsen.png' %}" alt="Samenwerkende Fondsen logo">
+            </figure>
+          </div>
+          <!-- Logo 7 -->
+          <div class="column is-one-third-mobile is-one-quarter-tablet is-one-quarter-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/ActiveChangeLogo.jpg' %}" alt="Active Change logo">
+            </figure>
+          </div>
+          <!-- Logo 8 -->
+          <div class="column is-one-third-mobile is-one-third-tablet is-one-third-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/RBCBank.png' %}" alt="RBC Bank logo">
+            </figure>
+          </div>
+          <!-- Logo 9 -->
+          <div class="column is-one-third-mobile is-one-third-tablet is-one-third-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/logo-banco-di-caribe.png' %}" alt="Banco di Caribe logo">
+            </figure>
+          </div>
+          <!-- Logo 10 -->
+          <div class="column is-one-third-mobile is-one-third-tablet is-one-third-desktop">
+            <figure class="image is-4by3">
+              <img src="{% static 'images/Digicel.png' %}" alt="Digicel logo">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Call to Action Section -->
+<section class="section">
+  <div class="container has-text-centered">
+    <h2 class="title">Doe Mee met Onze Missie</h2>
+    <p class="subtitle">Uw steun kan een groot verschil maken. Neem contact met ons op om meer te weten te komen over hoe u kunt bijdragen door doneren of vrijwilligerswerk.</p>
+    <div class="buttons is-centered">
+      <button class="button is-link is-medium is-rounded" id="contact-drawer-trigger">
+          Neem Contact Op
+        </button>
+    </div>
+  </div>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      var contactButton = document.getElementById('contact-drawer-btn');
+      var contactDrawerTrigger = document.getElementById('contact-drawer-trigger');
+
+      if (contactButton && contactDrawerTrigger) {
+          contactDrawerTrigger.addEventListener('click', function() {
+              contactButton.click();
+          });
+      }
+  });
+  </script>
+{% endblock %}

@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Rubric1",
+        "description": "Description for Rubric1."
+    },
+    {
+        "name": "Rubric2",
+        "description": "Description for Rubric2."
+    },
+    {
+        "name": "Rubric3",
+        "description": "Description for Rubric3."
+    }
+]

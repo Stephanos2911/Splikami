@@ -1,0 +1,259 @@
+{% extends 'SplikamiApp/base.html' %}
+
+{% load static %}
+
+{% block title %}Fundashon Splikami{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero is-link is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <p class="title is-1">Fundashon Splikami</p>
+            <p class="subtitle">Een verschil maken in onze Gemeenschap door technologie en educatie</p>
+          </div>
+    </div>
+</section>
+ 
+<!-- About Section -->
+<section class="section">
+  <div class="container">
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <h2 class="title">Over Stichting Splikami</h2>
+        <p class="content">
+          Stichting Splikami is een educatief centrum dat zich richt op de wijken Wishi en Marchena. Ons doel is om met de nieuwste technologieën en alternatieve onderwijsmethoden, ongeschoolde, werkloze, en kwetsbare jongeren en ouderen in deze gemeenschappen te ondersteunen. Wij brengen opleiding, training, kennis en technologie binnen handbereik van de wijkbewoners, met als doel hun persoonlijke en professionele ontwikkeling te bevorderen.
+        </p>
+      </div>
+      <div class="column is-half">
+        <figure class="image is-4by3">
+          <img src="{% static 'images/SplikamiGebouw.jpg' %}" alt="Splikami gebouw">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Discover -->
+<section class="section">
+  <div class="container">
+    <!-- Onderwijs Sectie -->
+    <div class="columns is-vcentered mb-6">
+      <div class="column is-one-third">
+        <h2 class="title is-3">
+          <span class="has-text-link">|</span> Onderwijs
+        </h2>
+      </div>
+      <div class="column">
+        <p class="content">
+          Ontdek onze onderwijsprogramma's die gemeenschappen versterken met kennis en vaardigheden door middel van diverse cursussen en trainingen.
+        </p>
+        <a href="{% url 'education' %}" class="button is-link is-light is-rounded">
+          <span>Meer informatie</span>
+          <span class="icon is-small">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!--  Archief Sectie -->
+    <div class="columns is-vcentered mb-6">
+      <div class="column is-one-third">
+        <h2 class="title is-3">
+          <span class="has-text-primary">|</span> Archief
+        </h2>
+      </div>
+      <div class="column">
+        <p class="content">
+          Verken ons uitgebreide documentenarchief met collecties over verschillende onderwerpen en categorieën. Toegang tot waardevolle bronnen en onderzoeks materiaal.
+        </p>
+        <a href="{% url 'archive' %}" class="button is-primary is-light is-rounded login-required">
+          <span>Meer informatie</span>
+          <span class="icon is-small">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Evenementen Sectie -->
+    <div class="columns is-vcentered mb-6">
+      <div class="column is-one-third">
+        <h2 class="title is-3">
+          <span class="has-text-warning">|</span> Evenementen
+        </h2>
+      </div>
+      <div class="column">
+        <p class="content">
+          Blijf op de hoogte van onze aankomende evenementen, workshops en gemeenschaps bijeenkomsten. Doe met ons mee om te leren, delen, en in contact te komen met anderen.
+        </p>
+        <a href="{% url 'events' %}" class="button is-warning is-light is-rounded">
+          <span>Meer informatie</span>
+          <span class="icon is-small">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Onze Diensten</h1>
+    <div class="columns is-multiline">
+      <!-- Service 1 -->
+      <div class="column is-4 has-text-centered">
+        <div class="box">
+          <div class="icon has-text-primary">
+            <i class="fas fa-tools fa-2x"></i>
+          </div>
+          <h2 class="title is-5 mt-3">Computerreparatie</h2>
+          <p class="content">
+            Laat uw computer deskundig repareren door ons team. Wij bieden uitgebreide ondersteuning en zorgen ervoor dat uw apparaat snel weer optimaal functioneert.
+          </p>
+        </div>
+      </div>
+      <!-- Service 2 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <div class="icon has-text-primary">
+            <i class="fas fa-file-alt fa-2x"></i>
+          </div>
+          <h2 class="title is-5 mt-3">Hulp bij Documenten</h2>
+          <p class="content">
+            Wij helpen u bij het correct invullen en indienen van documenten zoals visumaanvragen, brieven en sollicitaties. Zo weet u zeker dat alles nauwkeurig is verwerkt en aan de vereisten voldoet.
+          </p>
+        </div>
+      </div>
+      <!-- Service 3 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <div class="icon has-text-primary">
+            <i class="fas fa-building fa-2x"></i>
+          </div>
+          <h2 class="title is-5 mt-3">Zaalverhuur</h2>
+          <p class="content">
+            Huur een van onze ruimtes voor educatieve activiteiten zoals workshops, cursussen, of discussieavonden. Geschikt voor zowel regelmatige bijeenkomsten als eenmalige evenementen.
+          </p>
+        </div>
+      </div>
+      <!-- Service 4 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <div class="icon has-text-primary ">
+            <i class="fas fa-print fa-2x"></i>
+          </div>
+          <h2 class="title is-5 mt-3">Printen, Scannen, Kopiëren</h2>
+          <p class="content">
+            Maak gebruik van onze print-, scan- en kopieerdiensten. Daarnaast bieden wij een plastificeerservice voor het beschermen van uw belangrijke documenten.
+          </p>
+        </div>
+      </div>
+      <!-- Service 5 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <div class="icon has-text-primary">
+            <i class="fas fa-compact-disc fa-2x"></i>
+          </div>
+          <h2 class="title is-5 mt-3">CD/DVD Branden en Digitaliseren</h2>
+          <p class="content">
+            Laat uw video's en muziek op CD/DVD branden of digitaliseer uw LP's en singles naar moderne formaten. Zo bewaart u uw herinneringen in een duurzaam en toegankelijk formaat.
+          </p>
+        </div>
+      </div>
+      <!-- Service 6 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <div class="icon has-text-primary">
+            <i class="fas fa-wifi fa-2x"></i>
+          </div>
+          <h2 class="title is-5 mt-3">Internetcafé</h2>
+          <p class="content">
+            Kom naar ons internetcafé om scripties, huiswerk en projecten te maken, of om veilig te chatten en surfen op het internet, allemaal in een ontspannen en betrouwbare omgeving.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Wat Oud-Leerlingen Zeggen</h1>
+    <div class="columns is-multiline is-centered">
+      <!-- Testimonial 1 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <figure class="image is-128x128 is-inline-block">
+            <img class="is-rounded" src="https://via.placeholder.com/128" alt="Foto oud-leerling">
+          </figure>
+          <p class="title is-5 mt-4">John Doe</p>
+          <p class="subtitle is-6">Student aan de Universiteit van Amsterdam</p>
+          <p class="content">
+            "Dankzij de begeleiding en kansen die de stichting mij heeft gegeven, voel ik me nu goed voorbereid en succesvol in mijn studie. Het heeft mijn leven echt veranderd."
+          </p>
+        </div>
+      </div>
+      <!-- Testimonial 2 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <figure class="image is-128x128 is-inline-block">
+            <img class="is-rounded" src="https://via.placeholder.com/128" alt="Foto oud-leerling">
+          </figure>
+          <p class="title is-5 mt-4">Jane Smith</p>
+          <p class="subtitle is-6">Student aan de Technische Universiteit Delft</p>
+          <p class="content">
+            "De stichting heeft me geholpen om mijn doelen te bereiken en mijn potentieel te benutten. Ik voel me nu veel zelfverzekerder en beter voorbereid op de toekomst."
+          </p>
+        </div>
+      </div>
+      <!-- Testimonial 3 -->
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <figure class="image is-128x128 is-inline-block">
+            <img class="is-rounded" src="https://via.placeholder.com/128" alt="Foto oud-leerling">
+          </figure>
+          <p class="title is-5 mt-4">Mike Johnson</p>
+          <p class="subtitle is-6">Student aan de Erasmus Universiteit Rotterdam</p>
+          <p class="content">
+            "De steun die ik van de stichting heb gekregen, heeft me geholpen om succesvol te zijn in mijn studie en het beste uit mezelf te halen. Ik ben zo dankbaar voor de kansen die ik heb gekregen."
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="section">
+  <div class="container has-text-centered">
+    <h2 class="title">Doe Mee met Onze Missie</h2>
+    <p class="subtitle">Uw steun kan een groot verschil maken. Neem contact met ons op om meer te weten te komen over hoe u kunt bijdragen door doneren of vrijwilligerswerk.</p>
+    <div class="buttons is-centered">
+      <button class="button is-link is-medium is-rounded" id="contact-drawer-trigger">
+          Neem Contact Op
+        </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      var contactButton = document.getElementById('contact-drawer-btn');
+      var contactDrawerTrigger = document.getElementById('contact-drawer-trigger');
+
+      if (contactButton && contactDrawerTrigger) {
+          contactDrawerTrigger.addEventListener('click', function() {
+              contactButton.click();
+          });
+      }
+  });
+  </script>
+{% endblock %}

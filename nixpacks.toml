@@ -1,0 +1,29 @@
+[phases.setup]
+# Install necessary system packages for Tesseract OCR
+apt_packages = [
+    "...",
+    "tesseract-ocr",
+    "libtesseract-dev",
+    "tesseract-ocr-nld",
+    "tesseract-ocr-spa",
+    "tesseract-ocr-por",
+    "tesseract-ocr-fra",
+    "tesseract-ocr-eng"
+]
+
+[phases.install]
+# Install Python dependencies
+commands = [
+    "pip install -r requirements.txt"
+]
+
+[phases.build]
+# Collect static files for Django
+commands = [
+    "...",  # Retain default build commands if any
+    "python manage.py collectstatic --noinput"
+]
+
+[start]
+# Start the Django application with Gunicorn
+cmd = "gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT"

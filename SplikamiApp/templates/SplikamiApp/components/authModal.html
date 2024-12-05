@@ -1,0 +1,124 @@
+<div class="modal" id="auth-modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box no-hover-effect" style="margin: auto; padding-top: 2rem; padding-bottom: 2rem;">
+            <h3 class="title is-3 has-text-centered">Splikami</h3>
+            
+            <!-- Inlogformulier -->
+            <div id="login-form-container" class="auth-form-container">
+                <form id="login-form" method="POST" action="{% url 'login_view' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="next" value="{{ request.path }}">
+
+                    <div class="field">
+                        <label class="label">E-mailadres</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="email" name="username" placeholder="E-mail" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                    </div>                        
+                    <div class="field">
+                        <label class="label">Wachtwoord</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="password" name="password" placeholder="Wachtwoord" required>
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-lock"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <p class="help is-danger mb-3" id="login-error-message"></p>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Inloggen</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-light" type="button" id="cancel-login-btn">Annuleren</button>
+                        </div>
+                    </div>
+                </form>
+                <p class="has-text-centered" style="margin-top: 1.5rem;">Nog geen account? <a href="#" id="show-register-form">Registreren</a></p>
+            </div>
+
+            <!-- Registratieformulier -->
+            <div id="register-form-container" class="auth-form-container">
+                <form id="registration-form" method="POST" action="{% url 'register_view' %}">
+                    {% csrf_token %}
+                    
+                    <div class="columns">
+                        <div class="column is-half">
+                            <div class="field">
+                                <label class="label">Voornaam</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" name="first_name" placeholder="Voornaam" required>
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-half">
+                            <div class="field">
+                                <label class="label">Achternaam</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" name="last_name" placeholder="Achternaam" required>
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="field">
+                        <label class="label">E-mail</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="email" name="username" placeholder="E-mail" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                    </div>
+                
+                    <div class="field">
+                        <label class="label">Wachtwoord</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="password" name="password1" placeholder="Wachtwoord" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <p class="help">Het wachtwoord moet minimaal 8 tekens lang zijn.</p>
+                    </div>
+                
+                    <div class="field">
+                        <label class="label">Bevestig wachtwoord</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="password" name="password2" placeholder="Bevestig wachtwoord" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                    </div>
+                
+                    <p class="help is-danger mb-3" id="registration-error-message"></p>
+                
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Registreren</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-light" type="button" id="cancel-registration-btn">Annuleren</button>
+                        </div>
+                    </div>
+                </form>
+                <p class="has-text-centered" style="margin-top: 1.5rem;">Heeft u al een account? <a href="#" id="show-login-form">Log in</a></p>
+            </div>
+
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>

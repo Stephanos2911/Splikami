@@ -1,0 +1,40 @@
+<!-- Left Column for the Image -->
+<div class="column is-three-quarters">
+    <div class="box view-document-container" style="background-color: black; position: relative; overflow: hidden;">
+        <div id="skeleton" class="skeleton-loader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #333;"></div>
+        <figure class="image is-4by3" style="position: relative; overflow: hidden;">
+            <img id="interactive-image" class="document-image" src="" alt="{{ document.title }}" style="display: block;">
+        </figure>
+
+        <!-- Utility Buttons -->
+        <div class="controls buttons is-grouped" style="position: absolute; top: 10px; right: 10px;">
+            <button class="button is-normal has-text-white" onclick="resetImage()">
+                <span class="icon is-normal"><i class="fas fa-crosshairs"></i></span>
+            </button>
+            <button class="button is-normal has-text-white" onclick="zoomOut()">
+                <span class="icon is-normal"><i class="fas fa-minus"></i></span>
+            </button>
+            <button class="button is-normal has-text-white" onclick="zoomIn()">
+                <span class="icon is-normal"><i class="fas fa-plus"></i></span>
+            </button>
+            <button class="button is-normal has-text-white" onclick="rotateImage()">
+                <span class="icon is-normal"><i class="fas fa-undo"></i></span>
+            </button>
+            <button class="button is-normal has-text-white" onclick="toggleFullScreen()">
+                <span class="icon is-normal"><i class="fas fa-expand"></i></span>
+            </button>
+        </div>
+
+        <!-- Next and Previous Page Buttons -->
+        {% if document.page_count > 1 %}
+        <button id="prev-button" class="button is-normal has-text-white" onclick="navigatePage(-1)" 
+                style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);">
+            <span class="icon is-normal"><i class="fas fa-arrow-left"></i></span>
+        </button>
+        <button id="next-button" class="button is-normal has-text-white" onclick="navigatePage(1)" 
+                style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);">
+            <span class="icon is-normal"><i class="fas fa-arrow-right"></i></span>
+        </button>
+        {% endif %}
+    </div>
+</div>

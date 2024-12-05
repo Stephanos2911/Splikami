@@ -1,0 +1,36 @@
+
+{% if documents.has_other_pages %}
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if documents.has_previous %}
+    <a class="pagination-previous pagination-link" data-page="{{ documents.previous_page_number }}">Vorige</a>
+    {% else %}
+    <a class="pagination-previous" disabled>Vorige</a>
+    {% endif %}
+
+    {% if documents.has_next %}
+    <a class="pagination-next pagination-link" data-page="{{ documents.next_page_number }}">Volgende</a>
+    {% else %}
+    <a class="pagination-next" disabled>Volgende</a>
+    {% endif %}
+
+    <ul class="pagination-list">
+        {% for num in documents.paginator.page_range %}
+            {% if documents.number == num %}
+                <li>
+                    <a class="pagination-link is-current" aria-current="page">{{ num }}</a>
+                </li>
+            {% elif num > documents.number|add:'-5' and num < documents.number|add:'5' %}
+                <li>
+                    <a class="pagination-link" data-page="{{ num }}">{{ num }}</a>
+                </li>
+            {% elif num == 1 or num == documents.paginator.num_pages %}
+                <li>
+                    <a class="pagination-link" data-page="{{ num }}">{{ num }}</a>
+                </li>
+            {% elif num == documents.number|add:'-5' or num == documents.number|add:'5' %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}

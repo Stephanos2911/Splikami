@@ -1,0 +1,36 @@
+<div id="document-list" class="document-overview">
+    {% if not documents %}
+    <div class="no-results">
+        <i class="fas fa-folder-open"></i>
+        <p class="title is-4">Geen resultaten gevonden</p>
+        <p class="subtitle is-6">Probeer andere filters of zoektermen.</p>
+    </div>
+    {% else %}
+    <div class="columns is-multiline">
+        {% for document in documents %}
+            <div class="column is-one-third">
+                <div class="card is-hoverable" style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+                    <a href="{% url 'view_document' document.id %}" class="is-block">
+                        <div class="card-image">
+                            <figure class="image is-4by3">
+                                <img src="{{ document.thumbnail.url }}" alt="{{ document.title }}">
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="title is-4">{{ document.title|truncatechars:50 }}</h2>
+                            <p class="subtitle is-6 has-text-grey mt-1">
+                                {{ document.publish_date|date:"d M Y" }} • 
+                                {% if document.page_count == 1 %}
+                                    1 pagina
+                                {% else %}
+                                    {{ document.page_count }} pagina's
+                                {% endif %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+    {% endif %}
+</div>

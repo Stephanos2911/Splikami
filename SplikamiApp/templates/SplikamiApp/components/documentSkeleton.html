@@ -1,0 +1,17 @@
+<div id="skeleton-loader" class="columns is-multiline">
+    {% for _ in documents %}
+    <div class="column is-one-third">
+        <div class="card is-hoverable">
+            <div class="card-image">
+                <figure class="image is-4by3">
+                    <div class="skeleton" style="height: 100%;"></div>
+                </figure>
+            </div>
+            <div class="card-content">
+                <h2 class="title is-4 skeleton">&nbsp;</h2>
+                <p class="subtitle is-6 skeleton mt-1">&nbsp;</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

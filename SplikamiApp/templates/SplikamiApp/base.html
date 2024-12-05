@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="nl" class="has-navbar-fixed-top">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Splikami{% endblock %}</title>  
+
+    <link rel="stylesheet" href="{% static 'css/bulma-no-dark-mode.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="{% static 'js/contact.js' %}"></script>
+    <script type="module" src="{% static 'js/base.js' %}"></script>
+</head>
+
+<body data-is-authenticated="{{ user.is_authenticated|yesno:'true,false' }}">
+    <!-- navigation bar-->
+    {% include "SplikamiApp/components/navbar.html" %}
+
+    <!-- Content of each page -->
+    {% block content %} {% endblock %}
+
+    <!-- Modal for Login and registration -->
+    {% include "SplikamiApp/components/authModal.html" %}
+
+    <!-- Welkomstmodal voor Nieuwe Gebruikers -->
+    {% include "SplikamiApp/components/welcomeModal.html" %}
+
+    <!-- Contact Drawer -->
+    {% include "SplikamiApp/components/contactDrawer.html" %}
+    
+    <!-- Footer -->
+    {% include "SplikamiApp/components/footer.html" %}
+
+    {% block extra_js %}{% endblock extra_js %}
+
+</body>
+</html>

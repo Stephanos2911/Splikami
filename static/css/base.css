@@ -1,0 +1,143 @@
+/* Base Styles */
+:root {
+    --main-bg-color: #FFFFFF;
+    --main-div-color: #333333;
+    --main-blue-color: #003DA5;
+    --main-darkerBlue-color: #002974;
+    --main-yellow-color: #F9E300;
+    --main-yellowDarker-color: #C2B200;
+    --main-darkgreen-color: darkgreen;
+    --main-font-size: 16px;
+    --main-padding: 20px;
+    --main-margin: 10px;
+}
+  
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    font-family:  Arial, Georgia, 'Times New Roman', Times, serif;
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover, .box:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease-in-out;
+}
+
+.no-hover-effect:hover {
+    transform: none;
+    transition: none;
+}
+/* Ensuring smooth transition back to original size and position */
+.card, .box {
+    transition: transform 0.3s ease-in-out;
+}
+
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* Drawer */
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1200;
+    height: 100vh;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    overflow-y: auto;
+    width: 600px;
+    transform: translateX(100%);
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .drawer {
+        width: 100%; /* Full width on smaller screens */
+    }
+}
+
+.drawer-show {
+    transform: translateX(0);
+}
+
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(59, 59, 59, 0.5);
+    z-index: 1199;
+    display: none;
+}
+
+.drawer-overlay-show {
+    display: block;
+    background: rgba(59, 59, 59, 0.5);
+}
+
+
+
+/* Spinner */
+.skeleton-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2c2c2c; /* Dark grey color */
+    z-index: 2; /* Ensure it's on top of the image but below the controls */
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Hide skeleton loader when image is loaded */
+.skeleton-loader.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+
+.past-event-box {
+    opacity: 0.7; 
+    filter: grayscale(100%);
+    transition: all 0.3s ease-in-out;
+}
+
+.past-event-box:hover {
+    transform: translateY(-2px);
+    opacity: 0.9; 
+    filter: grayscale(0%); 
+}
+

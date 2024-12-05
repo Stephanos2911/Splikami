@@ -1,0 +1,29 @@
+<footer class="footer">
+    <div class="container">
+        <div class="columns is-mobile is-multiline is-centered">
+            <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                <h3 class="title is-4"><i class="fa fa-graduation-cap"></i> Online Cursussen</h3>
+                <p>Splikami biedt een reeks online cursussen aan om de technologische vaardigheden en educatieve kennis van de gemeenschap te verbeteren.</p>
+                <a href="{% url 'online_courses' %}" class="has-text-link">Bekijk onze online cursussen</a>
+            </div>
+            <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                <h3 class="title is-4"><i class="fa fa-archive"></i> Archief</h3>
+                <p>Toegang tot publieke documenten en rapporten die relevant zijn voor de gemeenschap.</p>
+                <a href="{% url 'archive' %}" class="has-text-link">Bekijk ons documentenarchief</a>
+            </div>
+            <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                <h3 class="title is-4"><i class="fa fa-briefcase"></i> Services</h3>
+                <p>Splikami biedt verschillende ruimtes voor educatieve evenementen, zoals workshops, cursussen of discussieavonden.</p>
+                <a href="javascript:void(0);" class="has-text-link contact-link">Neem contact op</a>
+            </div>
+            <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                <h3 class="title is-4"><i class="fa fa-heart"></i> Sponsoren</h3>
+                <p>Dankzij sponsoren kunnen wij onze projecten realiseren. Steun ons ook:</p>
+                <a href="javascript:void(0);" class="has-text-link contact-link">Contact</a> of bel +599 9 462 67 67
+            </div>
+        </div>
+        <div class="content has-text-centered">
+            <p>&copy; {% now "Y" %} Splikami</p>
+        </div>
+    </div>
+</footer>

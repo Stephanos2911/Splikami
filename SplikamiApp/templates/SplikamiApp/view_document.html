@@ -1,0 +1,170 @@
+{% extends 'SplikamiApp/base.html' %}
+
+{% load static %}
+
+{% block title %}{{ document.title }} | Splikami{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/viewDocument.css' %}">
+{%  endblock %}
+
+{% block content %}
+<style>
+    .box:hover {
+        transform: none;
+        transition: none;
+    }
+    
+    .box {
+        transition: none;
+    }
+
+    .button.is-normal.has-text-white {
+        background-color: transparent;
+        border: none;
+        transition: background-color 0.3s ease; /* Add transition for smooth hover effect */
+        display: flex; /* Use Flexbox for centering */
+        align-items: center; /* Center vertically */
+        justify-content: center; /* Center horizontally */
+    }
+    
+    .button.is-normal.has-text-white:hover {
+        background-color: rgba(128, 128, 128, 0.8);
+    }
+
+    .button.is-normal.has-text-white .icon.is-normal i {
+        font-size: 1.5rem; 
+    }
+
+    .page-box {
+        transition: background-color 0.4s, transform 0.4s;
+        cursor: pointer;
+    }
+    
+    .page-box:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .page-box.active {
+        background-color: #e5e5e5;
+        border-left: 4px solid #3273dc;
+    }
+    
+</style>
+<section class="section">
+    <div class="hero">
+        <div class="columns is-variable is-8 is-multiline">
+            <!-- Left Column for the Image -->
+            {% include 'SplikamiApp/components/documentViewer.html' %}
+            
+            <!-- Right Column for the Document Information -->
+            <div class="column is-one-quarter-tablet is-full-mobile">
+                <div class="box document-info-container">
+                    <h3 class="title is-4">{{ document.title }}</h3>
+
+                    <!-- Publish Date Field -->
+                    <div class="field">
+                        <label class="label has-text-weight-semibold"><i class="fas fa-calendar-alt mr-1"></i> Publicatiedatum</label>
+                        <div class="control">
+                            <p class="document-page-field-value has-text-grey">{{ document.publish_date|date:"d F, Y"|default:"onbekend" }}</p>
+                        </div>
+                    </div>
+                    
+
+                    <!-- Collection Field -->
+                    <div class="field">
+                        <label class="label has-text-weight-semibold"><i class="fas fa-folder-open mr-1"></i> Collectie</label>
+                        <div class="control">
+                            <p class="document-page-field-value has-text-grey">
+                                {% if document.collection %}
+                                    <a href="{% url 'archive' %}?collections={{ document.collection.name|urlencode }}" class="has-text-link login-required">{{ document.collection.name }}</a>
+                                {% else %}
+                                    <span class="has-text-grey-light">onbekend</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rubric Field as Links with Filter -->
+                    <div class="field">
+                        <label class="label has-text-weight-semibold"><i class="fas fa-clipboard mr-1"></i> Rubrieken</label>
+                        <div class="control">
+                            <p class="is-inline-block">
+                                {% if document.rubric.exists %}
+                                    {% for rubric in document.rubric.all %}
+                                        <a href="{% url 'archive' %}?rubric={{ rubric.name|urlencode }}" class="has-text-link login-required">{{ rubric.name }}{% if not forloop.last %}, {% endif %}</a>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="has-text-grey-light">onbekend</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Subject Field as Links with Filter -->
+                    <div class="field">
+                        <label class="label has-text-weight-semibold"><i class="fas fa-tags mr-1"></i> Onderwerpen</label>
+                        <div class="control">
+                            <p class="is-inline-block">
+                                {% if document.subject.exists %}
+                                    {% for subject in document.subject.all %}
+                                        <a href="{% url 'archive' %}?subject={{ subject.name|urlencode }}" class="has-text-link login-required">{{ subject.name }}{% if not forloop.last %}, {% endif %}</a>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="has-text-grey-light">onbekend</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>                          
+
+                    <hr class="my-4">
+                    <div class="field">
+                        <label class="label has-text-weight-semibold"><i class="fas fa-book mr-1"></i> Pagina's</label>
+                        <div class="control">
+                            <p class="document-page-field-value has-text-grey">
+                                Pagina <span id="current-page-display">{{ current_page }}</span> van {{ document.pages.count }}
+                            </p>
+                            <button id="page-drawer-btn" class="button is-primary is-fullwidth mt-2">
+                                <span>Selecteer Pagina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="current-page" value="{{ current_page }}">
+        <input type="hidden" id="total-pages" value="{{ document.page_count }}">
+
+        <script id="pages-data" type="application/json">
+            {{ pages_json|safe }}
+        </script>
+
+        <!-- Page Drawer -->
+        <div id="page-drawer-overlay" class="drawer-overlay"></div>
+        <div id="page-drawer" class="drawer" style="width: 450px; overflow-y: auto;">
+            <div class="level is-mobile">
+                <div class="level-left">
+                    <div class="level-item">
+                        <h1 class="title m-0 has-text-black">Selecteer Pagina</h1>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <button id="page-drawer-close-btn" class="delete" aria-label="close"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="columns is-multiline is-1" id="page-list">
+                    <!-- Page Boxes will be added here -->
+                </div>
+            </div>
+        </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/documentViewer.js' %}"></script>
+<script src="{% static 'js/pageDrawer.js' %}"></script>
+{% endblock %}

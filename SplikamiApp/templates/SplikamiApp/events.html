@@ -1,0 +1,318 @@
+{% extends 'SplikamiApp/base.html' %}
+
+{% load static %}
+
+{% block title %}Evenementen | Splikami{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <!-- Section Title -->
+    <h1 class="title has-text-centered">Evenementen</h1>
+
+    <!-- First Upcoming Event -->
+    {% if first_upcoming_event %}
+    <div class="box mb-6 has-background-primary-light event-box" data-event-id="{{ first_upcoming_event.id }}">
+      <article class="media">
+        <div class="media-content">
+          <div class="content">
+            <h2 class="title is-4">{{ first_upcoming_event.title }}</h2>
+            <p>
+              <span>
+                <i class="fas fa-calendar-alt"></i> 
+                {{ first_upcoming_event.start_time|date:"j F, Y" }}, {{ first_upcoming_event.start_time|date:"H:i" }}
+              </span><br>
+              <span>
+                <i class="fas fa-map-marker-alt"></i> 
+                {{ first_upcoming_event.location }}
+              </span><br>
+              <span>{{ first_upcoming_event.description|truncatechars:200 }}</span>
+            </p>
+            <div class="buttons">
+              <button class="button is-link is-light view-details-button" data-event-id="{{ first_upcoming_event.id }}">
+                <span class="icon">
+                  <i class="fas fa-info-circle"></i>
+                </span>
+                <span>Details</span>
+              </button>
+              {% if first_upcoming_event.url %}
+              <a href="{{ first_upcoming_event.url }}" target="_blank" class="button is-link">
+                <span class="icon"><i class="fas fa-video"></i></span>
+                <span>Deelnemen</span>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Modal for First Upcoming Event -->
+    <div class="modal" id="modal-{{ first_upcoming_event.id }}">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">{{ first_upcoming_event.title }}</p>
+          <button class="delete" aria-label="sluiten"></button>
+        </header>
+        <section class="modal-card-body">
+          <p>
+            <span>
+              <i class="fas fa-calendar-alt"></i> 
+              {{ first_upcoming_event.start_time|date:"j F, Y" }}, {{ first_upcoming_event.start_time|date:"H:i" }}
+            </span><br>
+            <span>
+              <i class="fas fa-map-marker-alt"></i> 
+              {{ first_upcoming_event.location }}
+            </span><br>
+          </p>
+          <p class="mt-4">{{ first_upcoming_event.description }}</p>
+          {% if first_upcoming_event.image %}
+          <figure class="image is-4by3 mt-4">
+            <img src="{{ first_upcoming_event.image.url }}" alt="{{ first_upcoming_event.title }}">
+          </figure>
+          {% endif %}
+        </section>        
+        <footer class="modal-card-foot">
+          <div class="buttons">
+            {% if first_upcoming_event.url %}
+            <a href="{{ first_upcoming_event.url }}" target="_blank" class="button is-link">
+              <span class="icon"><i class="fas fa-video"></i></span>
+              <span>Deelnemen</span>
+            </a>
+            {% endif %}
+            {% if first_upcoming_event.pdf %}
+            <a href="{{ first_upcoming_event.pdf.url }}" target="_blank" class="button is-danger">
+              <span class="icon"><i class="fas fa-file-pdf"></i></span>
+              <span>Open PDF</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'generate_ics' first_upcoming_event.id %}" class="button is-primary">
+              <span class="icon"><i class="fas fa-calendar-plus"></i></span>
+              <span>Toevoegen</span>
+            </a>
+          </div>
+        </footer>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Future and Past Events Columns -->
+    <div class="columns is-variable is-8">
+      <!-- Future Events Column -->
+      <div class="column">
+        <h3 class="subtitle is-4 has-text-centered">Toekomstige Evenementen</h3>
+        {% for event in upcoming_events %}
+        <div class="box mb-5 event-box" data-event-id="{{ event.id }}">
+          <article class="media">
+            <div class="media-content">
+              <div class="content">
+                <h4 class="title is-5">{{ event.title }}</h4>
+                <p>
+                  <span>
+                    <i class="fas fa-calendar-alt"></i> 
+                    {{ event.start_time|date:"j F, Y" }}, {{ event.start_time|date:"H:i" }}
+                  </span><br>
+                  <span>
+                    <i class="fas fa-map-marker-alt"></i> 
+                    {{ event.location }}
+                  </span><br>
+                  <span>{{ event.description|truncatechars:200 }}</span>
+                </p>
+                <div class="buttons">
+                  <button class="button is-link is-light view-details-button" data-event-id="{{ event.id }}">
+                    <span class="icon">
+                      <i class="fas fa-info-circle"></i>
+                    </span>
+                    <span>Details</span>
+                  </button>
+                  <a href="{% url 'generate_ics' event.id %}" class="button is-primary">
+                    <span class="icon"><i class="fas fa-calendar-plus"></i></span>
+                    <span>Toevoegen</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Modal for Future Event -->
+        <div class="modal" id="modal-{{ event.id }}">
+          <div class="modal-background"></div>
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">{{ event.title }}</p>
+              <button class="delete" aria-label="sluiten"></button>
+            </header>
+            <section class="modal-card-body">
+              <p>
+                <span>
+                  <i class="fas fa-calendar-alt"></i> 
+                  {{ event.start_time|date:"j F, Y" }}, {{ event.start_time|date:"H:i" }}
+                </span><br>
+                <span>
+                  <i class="fas fa-map-marker-alt"></i> 
+                  {{ event.location }}
+                </span><br>
+              </p>
+              <p class="mt-4">{{ event.description }}</p>
+              {% if event.image %}
+              <figure class="image is-4by3 mt-4">
+                <img src="{{ event.image.url }}" alt="{{ event.title }}">
+              </figure>
+              {% endif %}
+            </section>  
+            <footer class="modal-card-foot">
+              <div class="buttons">
+                <a href="{% url 'generate_ics' event.id %}" class="button is-primary">
+                  <span class="icon"><i class="fas fa-calendar-plus"></i></span>
+                  <span>Toevoegen</span>
+                </a>
+                {% if event.pdf %}
+                <a href="{{ event.pdf.url }}" target="_blank" class="button is-danger">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Open PDF</span>
+                </a>
+                {% endif %}
+              </div>
+            </footer>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Past Events Column -->
+      <div class="column">
+        <h3 class="subtitle is-4 has-text-centered">Afgelopen Evenementen</h3>
+        {% for event in past_events %}
+        <div class="box mb-5 event-box past-event-box" data-event-id="{{ event.id }}">
+          <article class="media">
+            <div class="media-content">
+              <div class="content">
+                <h4 class="title is-5">{{ event.title }}</h4>
+                <p>
+                  <span>
+                    <i class="fas fa-calendar-alt"></i> 
+                    {{ event.start_time|date:"j F, Y" }}, {{ event.start_time|date:"H:i" }}
+                  </span><br>
+                  <span>
+                    <i class="fas fa-map-marker-alt"></i> 
+                    {{ event.location }}
+                  </span><br>
+                  <span>{{ event.description|truncatechars:200 }}</span>
+                </p>
+                <div class="buttons">
+                  <button class="button is-link is-light view-details-button" data-event-id="{{ event.id }}">
+                    <span class="icon">
+                      <i class="fas fa-info-circle"></i>
+                    </span>
+                    <span>Details</span>
+                  </button>
+                  {% if event.pdf %}
+                  <a href="{{ event.pdf.url }}" target="_blank" class="button is-danger">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Open PDF</span>
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Modal for Past Event -->
+        <div class="modal" id="modal-{{ event.id }}">
+          <div class="modal-background"></div>
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">{{ event.title }}</p>
+              <button class="delete" aria-label="sluiten"></button>
+            </header>
+            <section class="modal-card-body">
+              <p>
+                <span>
+                  <i class="fas fa-calendar-alt"></i> 
+                  {{ event.start_time|date:"j F, Y" }}, {{ event.start_time|date:"H:i" }}
+                </span><br>
+                <span>
+                  <i class="fas fa-map-marker-alt"></i> 
+                  {{ event.location }}
+                </span><br>
+              </p>
+              <p class="mt-4">{{ event.description }}</p>
+              {% if event.image %}
+              <figure class="image is-4by3 mt-4">
+                <img src="{{ event.image.url }}" alt="{{ event.title }}">
+              </figure>
+              {% endif %}
+            </section>
+            <footer class="modal-card-foot">
+              <div class="buttons">
+                {% if event.pdf %}
+                <a href="{{ event.pdf.url }}" target="_blank" class="button is-danger">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Open PDF</span>
+                </a>
+                {% endif %}
+              </div>
+            </footer>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Function to open a modal based on the event ID
+    const openModal = (id) => {
+      const modal = document.getElementById('modal-' + id);
+      if (modal) {
+        modal.classList.add('is-active');
+      }
+    };
+  
+    // Function to close all modals
+    const closeModal = () => {
+      const modals = document.querySelectorAll('.modal.is-active');
+      modals.forEach(modal => {
+        modal.classList.remove('is-active');
+      });
+    };
+
+    // Attach event listeners to all 'view-details-button' buttons
+    const viewDetailButtons = document.querySelectorAll('.view-details-button');
+    viewDetailButtons.forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent event from bubbling up to the parent event box
+        const eventId = button.getAttribute('data-event-id');
+        openModal(eventId);
+      });
+    });
+  
+    // Attach event listeners to all event boxes
+    const eventBoxes = document.querySelectorAll('.event-box');
+    eventBoxes.forEach(box => {
+      box.addEventListener('click', (event) => {
+        // Prevent clicking on a button within the box from triggering the modal
+        if (!event.target.closest('button')) {
+          const eventId = box.getAttribute('data-event-id');
+          openModal(eventId);
+        }
+      });
+    });
+  
+    // Attach event listeners to all close buttons and modal backgrounds
+    const modalCloses = document.querySelectorAll('.delete, .modal-background');
+    modalCloses.forEach(close => {
+      close.addEventListener('click', closeModal);
+    });
+  });
+</script>
+{% endblock %}

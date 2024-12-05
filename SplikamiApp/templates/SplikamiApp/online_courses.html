@@ -1,0 +1,171 @@
+{% extends 'SplikamiApp/base.html' %}
+
+{% load static %}
+
+{% block title %}Onze online cursussen | Splikami{% endblock %}
+
+{% block content %}
+
+<section class="section">
+    <div class="container">
+        <div class="content">
+            <!-- Main Title -->
+            <h1 class="title">Online Cursussen</h1>
+        
+            <!-- Introduction Section -->
+            <div class="content">
+                <p>
+                    EMI Online heeft als doel EMI leerlingen de mogelijkheid te bieden om hun kennis en vaardigheden te kunnen ontwikkelen m.b.v. online educatie. Hierbij is het de bedoeling ook de broers, zussen en ouders van de leerling de mogelijkheid te bieden gebruik te maken van de online systemen om zich verder te ontwikkelen.
+                </p>
+            </div>
+
+            <!-- Bulma tabs for both logged-in and non-authenticated users -->
+            {% if user.is_authenticated %}
+            <div class="tabs is-boxed">
+                <ul style="margin-left: 0;">
+                    <li class="is-active" data-tab="my-courses-tab">
+                        <a>
+                            <span class="icon"><i class="fas fa-user-graduate"></i></span>
+                            <span>Mijn Cursussen</span>
+                        </a>
+                    </li>
+                    <li data-tab="all-courses-tab">
+                        <a>
+                            <span class="icon"><i class="fas fa-book"></i></span>
+                            <span>Overige Cursussen</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <div class="tabs is-boxed">
+                <ul style="margin-left: 0;">
+                    <li data-tab="all-courses-tab" class="is-active">
+                        <a>
+                            <span class="icon"><i class="fas fa-book"></i></span>
+                            <span>Alle Cursussen</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- My Courses Tab -->
+            {% if user.is_authenticated %}
+            <div id="my-courses-tab" class="tab-content is-active">
+                {% if user_courses %}
+                    <div class="columns is-multiline">
+                        {% for course in user_courses %}
+                        <div class="column is-one-third">
+                            <div class="card" data-target="modal-enrolled-{{ course.id }}">
+                                <div class="card-content">
+                                    <p class="title is-4">{{ course.title }}</p>
+                                    <div class="content">
+                                        {{ course.description|truncatewords:30 }}...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="notification">
+                        Je hebt momenteel geen cursussen toegewezen. Neem contact op met Splikami of je begeleider om een cursus te ontvangen.
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- All Courses Tab -->
+            <div id="all-courses-tab" class="tab-content">
+                <div class="columns is-multiline">
+                    {% for course in all_courses %}
+                    <div class="column is-one-third">
+                        <div class="card" data-target="modal-{{ course.id }}">
+                            <div class="card-content">
+                                <p class="title is-4">{{ course.title }}</p>
+                                <div class="content">
+                                    {{ course.description|truncatewords:30 }}...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Modals for courses -->
+            {% for course in user_courses %}
+            <div id="modal-enrolled-{{ course.id }}" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">{{ course.title }}</p>
+                        <button class="delete" aria-label="close"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <p>{{ course.description }}</p>
+                    </section>
+                </div>
+            </div>
+            {% endfor %}
+            {% for course in all_courses %}
+            <div id="modal-{{ course.id }}" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">{{ course.title }}</p>
+                        <button class="delete" aria-label="close"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <p>{{ course.description }}</p>
+                    </section>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.card[data-target]');
+    cards.forEach((card) => {
+        card.addEventListener('click', () => {
+            const modalId = card.getAttribute('data-target');
+            const modal = document.getElementById(modalId);
+            modal.classList.add('is-active');
+        });
+    });
+
+    const closeButtons = document.querySelectorAll('.modal .delete, .modal-background');
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal');
+            modal.classList.remove('is-active');
+        });
+    });
+
+    const tabs = document.querySelectorAll('.tabs ul li');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(item => item.classList.remove('is-active'));
+            tab.classList.add('is-active');
+
+            const target = tab.dataset.tab;
+            tabContents.forEach(content => {
+                content.style.display = content.id === target ? 'block' : 'none';
+            });
+        });
+    });
+
+    tabContents.forEach(content => {
+        if (!content.classList.contains('is-active')) {
+            content.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}
