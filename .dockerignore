@@ -1,10 +1,8 @@
-
 *.pyc
 __pycache__
 .env
 .git
 .gitignore
 .DS_Store
-db.sqlite3
 staticfiles
 media
