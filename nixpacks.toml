@@ -17,7 +17,7 @@ aptPkgs = [
 [phases.install]
 # Virtual environment setup and package installation
 cmds = [
-    "python3.12 -m venv /opt/venv",
+    "python3.10 -m venv /opt/venv",
     ". /opt/venv/bin/activate",
     "pip install --upgrade pip",
     "pip install wheel setuptools",
