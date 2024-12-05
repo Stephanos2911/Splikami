@@ -1,29 +1,47 @@
 [phases.setup]
-# Install necessary system packages for Tesseract OCR
-apt_packages = [
-    "...",
-    "tesseract-ocr",
-    "libtesseract-dev",
-    "tesseract-ocr-nld",
-    "tesseract-ocr-spa",
-    "tesseract-ocr-por",
-    "tesseract-ocr-fra",
-    "tesseract-ocr-eng"
+nixPkgs = [
+    "python312",
+    "gcc",
+    "pkg-config",
+    "zlib",
+    "tesseract",
+    "tesseract-data-eng",
+    "tesseract-data-nld",
+    "tesseract-data-spa",
+    "tesseract-data-por",
+    "tesseract-data-fra"
+]
+aptPkgs = [
+    "python3.12-dev",
+    "build-essential",
+    "libpq-dev",
+    "curl",
+    "wget",
+    "libtesseract-dev"
 ]
 
 [phases.install]
-# Install Python dependencies
-commands = [
+cmds = [
+    "python3.12 -m venv /opt/venv",
+    ". /opt/venv/bin/activate",
+    "pip install --upgrade pip",
+    "pip install wheel setuptools",
     "pip install -r requirements.txt"
 ]
 
 [phases.build]
-# Collect static files for Django
-commands = [
-    "...",  # Retain default build commands if any
+cmds = [
+    ". /opt/venv/bin/activate",
+    "python manage.py migrate",
     "python manage.py collectstatic --noinput"
 ]
 
 [start]
-# Start the Django application with Gunicorn
-cmd = "gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = ". /opt/venv/bin/activate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120"
+
+[variables]
+PYTHONUNBUFFERED = "1"
+PYTHONPATH = "/app"
+PATH = "/opt/venv/bin:$PATH"
+LANG = "C.UTF-8"
+LC_ALL = "C.UTF-8"
