@@ -31,4 +31,4 @@ VOLUME ["/app/database"]
 RUN python manage.py collectstatic --noinput
 
 # Run migrations and start the server
-CMD python manage.py migrate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT
+CMD python manage.py makemigrations SplikamiApp && python manage.py migrate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT
