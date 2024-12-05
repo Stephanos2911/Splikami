@@ -2,7 +2,7 @@
 # Use APT to install Tesseract and language packages
 aptPkgs = [
     "python3.10-dev",
-    "python3.10-venv"
+    "python3.10-venv",
     "build-essential",
     "libpq-dev",
     "curl",
