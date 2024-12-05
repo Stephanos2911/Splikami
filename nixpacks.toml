@@ -1,7 +1,7 @@
 [phases.setup]
 # Use APT to install Tesseract and language packages
 aptPkgs = [
-    "python3.12-dev",
+    "python3.10-dev",
     "build-essential",
     "libpq-dev",
     "curl",
