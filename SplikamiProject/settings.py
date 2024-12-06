@@ -25,6 +25,9 @@ if DEBUG:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Ensure database directory exists
+os.makedirs(BASE_DIR / 'database', exist_ok=True)
+
 # Now get the rest of the settings
 SECRET_KEY = os.environ.get('SECRET_KEY')
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if not DEBUG else ['*']
@@ -152,19 +155,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
 
 # Security settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
-# Default security settings
-SECURE_SSL_REDIRECT = False
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
-SECURE_BROWSER_XSS_FILTER = False
-SECURE_HSTS_SECONDS = None
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-SECURE_HSTS_PRELOAD = False
-
-# Production security settings
+# Production Settings
 if not DEBUG:
+    # Security Settings
     SECURE_SSL_REDIRECT = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
@@ -172,6 +166,22 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    # Host/Domain settings
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+    CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+else:
+    # Development Settings
+    SECURE_SSL_REDIRECT = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_BROWSER_XSS_FILTER = False
+    SECURE_HSTS_SECONDS = None
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+    
+    ALLOWED_HOSTS = ['*']
 
 LOGGING = {
     'version': 1,
@@ -194,3 +204,20 @@ LOGGING = {
         },
     },
 }
+
+# Debug prints for important settings
+print("\n=== CRITICAL SETTINGS DEBUG INFO ===")
+print(f"DEBUG MODE: {DEBUG}")
+print(f"SECRET_KEY Set: {'Yes' if SECRET_KEY else 'No'}")
+print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print(f"CSRF_TRUSTED_ORIGINS: {CSRF_TRUSTED_ORIGINS}")
+print(f"DATABASE: {DATABASES['default']['NAME']}")
+print("\n=== SECURITY SETTINGS ===")
+print(f"SECURE_SSL_REDIRECT: {SECURE_SSL_REDIRECT}")
+print(f"CSRF_COOKIE_SECURE: {CSRF_COOKIE_SECURE}")
+print(f"SESSION_COOKIE_SECURE: {SESSION_COOKIE_SECURE}")
+print("\n=== AWS SETTINGS ===")
+print(f"AWS Credentials Set: {'Yes' if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY else 'No'}")
+print(f"AWS_STORAGE_BUCKET_NAME: {AWS_STORAGE_BUCKET_NAME}")
+print(f"AWS_S3_CUSTOM_DOMAIN: {AWS_S3_CUSTOM_DOMAIN}")
+print("================================\n")
