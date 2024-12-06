@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
-# First, check DEBUG from environment without dotenv
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -91,6 +90,7 @@ DATABASES = {
 
 
 
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -128,18 +128,31 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = 'splikami'
 AWS_S3_REGION_NAME = 'us-east-1'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+
 
 # Media files configuration
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-DEFAULT_FILE_STORAGE = 'SplikamiApp.storage_backends.MediaStorage'
+# Storage Configuration
+STORAGES = {
+    "default": {
+        "BACKEND":  "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+        }
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
+
 
 # Static files configuration
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Session and authentication settings
 SESSION_COOKIE_AGE = 21600  # 6 hours
@@ -151,7 +164,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
 
 if DEBUG:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = []
     CSRF_TRUSTED_ORIGINS = []
 else:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')

@@ -106,7 +106,13 @@ class SubjectAdmin(admin.ModelAdmin):
     
 # Admin configuration for Document
 class DocumentAdminForm(forms.ModelForm):
-    uploaded_file = forms.FileField(required=True, help_text="Upload a PDF or an image file")
+    uploaded_file = forms.FileField(required=False, help_text="Upload a PDF or an image file")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make uploaded_file required only when creating a new document
+        if not self.instance.pk:  # If this is a new document
+            self.fields['uploaded_file'].required = True
 
     class Meta:
         model = Document
@@ -136,23 +142,20 @@ class DocumentAdmin(admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
         if not obj.pk:  # If the document is being created for the first time
-            obj.added_by = request.user  # Automatically set the added_by field
-
-        uploaded_file = form.cleaned_data.get('uploaded_file')
-
-        # Save the basic document instance first to get the ID
-        obj.save()
+            obj.added_by = request.user
         
-        def background_task():
-            if uploaded_file.name.lower().endswith('.pdf'):
-                handle_pdf(uploaded_file=uploaded_file, document=obj)
-            elif uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg')):
-                handle_image(uploaded_file=uploaded_file, document=obj)
-
-        # Start the background task
-        threading.Thread(target=background_task).start()
-
-        # Ensure the document instance is saved after processing
+        uploaded_file = form.cleaned_data.get('uploaded_file')
+        
+        # Only process the file if one was uploaded
+        if uploaded_file:
+            obj.save()
+            def background_task():
+                if uploaded_file.name.lower().endswith('.pdf'):
+                    handle_pdf(uploaded_file=uploaded_file, document=obj)
+                elif uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    handle_image(uploaded_file=uploaded_file, document=obj)
+            threading.Thread(target=background_task).start()
+        
         super().save_model(request, obj, form, change)
         
     def get_readonly_fields(self, request, obj=None):
