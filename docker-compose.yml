@@ -5,6 +5,7 @@ services:
     env_file: .env
     volumes:
       - ./database:/app/database
+      - ./static:/app/static
       - ./staticfiles:/app/staticfiles
     expose:
       - "8000"
@@ -17,7 +18,7 @@ services:
       - web
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./static:/app/static
+      - ./staticfiles:/app/staticfiles
     ports:
       - "80:80"
       - "443:443"
