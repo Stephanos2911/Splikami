@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Set default PORT to 8000 if not already set
+ENV PORT=${PORT:-8000}
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -31,4 +34,4 @@ VOLUME ["/app/database"]
 RUN python manage.py collectstatic --noinput
 
 # Run migrations and start the server
-CMD python manage.py makemigrations SplikamiApp && python manage.py migrate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT
+CMD ["sh", "-c", "python manage.py makemigrations SplikamiApp && python manage.py migrate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT"]
