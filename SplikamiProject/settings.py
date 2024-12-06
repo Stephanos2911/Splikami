@@ -162,7 +162,7 @@ CSRF_TRUSTED_ORIGINS = []
 # Production Settings
 if not DEBUG:
     # Security Settings
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = False
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
