@@ -37,4 +37,8 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 
 # Run migrations and start the server
-CMD ["sh", "-c", "python manage.py makemigrations SplikamiApp && python manage.py migrate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py makemigrations SplikamiApp && python manage.py migrate && \
+    echo \"from django.contrib.auth.models import User; \
+    User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists() or \
+    User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')\" | python manage.py shell && \
+    gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:8000"]
