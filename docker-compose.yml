@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: splikami_app
+    env_file: .env
+    volumes:
+      - ./database:/app/database
+      - ./static:/app/static
+    expose:
+      - "8000"
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: splikami_nginx
+    depends_on:
+      - web
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./static:/app/static
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
