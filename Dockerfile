@@ -33,5 +33,8 @@ VOLUME ["/app/database"]
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
+# Expose port 8000
+EXPOSE 8000
+
 # Run migrations and start the server
 CMD ["sh", "-c", "python manage.py makemigrations SplikamiApp && python manage.py migrate && gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:$PORT"]
