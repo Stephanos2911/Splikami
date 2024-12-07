@@ -19644,3 +19644,5 @@ has-background-danger.is-hoverable:active {
   --bulma-pre-background: var(--bulma-background);
   --bulma-shadow: 0 0.5em 1em -0.125em hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1), 0 0px 0 1px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.02);
 }
+
+/*# sourceMappingURL=bulma-no-dark-mode.css.map */

@@ -26,8 +26,6 @@ os.makedirs(BASE_DIR / 'database', exist_ok=True)
 
 # Now get the rest of the settings
 SECRET_KEY = os.environ.get('SECRET_KEY')
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if not DEBUG else ['*']
-
 
 # Application definition
 AUTHENTICATION_BACKENDS = [
@@ -132,27 +130,29 @@ AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-
-
 # Media files configuration
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
+
+# Static files configuration
+STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # Storage Configuration
 STORAGES = {
     "default": {
-        "BACKEND":  "storages.backends.s3boto3.S3Boto3Storage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
+            "location": "media",
         }
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        "OPTIONS": {
+            "location": "static",
+        }
     },
 }
-MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
-
-
-# Static files configuration
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Session and authentication settings
 SESSION_COOKIE_AGE = 21600  # 6 hours
@@ -169,4 +169,3 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
     CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
-
