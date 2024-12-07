@@ -30,14 +30,13 @@ RUN mkdir -p /app/database && chmod 777 /app/database
 # Set volume for persistent database storage
 VOLUME ["/app/database"]
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
 # Expose port 8000
 EXPOSE 8000
 
-# Run migrations and start the server
-CMD ["sh", "-c", "python manage.py makemigrations SplikamiApp && python manage.py migrate && \
+# setup Django
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && \
+    python manage.py makemigrations SplikamiApp && \
+    python manage.py migrate && \
     echo \"from django.contrib.auth.models import User; \
     User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists() or \
     User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')\" | python manage.py shell && \
