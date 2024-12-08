@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.dateformat import DateFormat
 from django.core.validators import validate_email
+from django.core.cache import cache
 
 
 class Course(models.Model):
@@ -41,7 +42,7 @@ class Contact(models.Model):
         return self.name
     
 class Collection(models.Model):
-    name = models.CharField(max_length=255, help_text='naam van bijvoorbeeld een krant: Extra')
+    name = models.CharField(max_length=255, help_text='naam van bijvoorbeeld een krant: Extra', db_index=True)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     thumbnail = models.ImageField(upload_to='collection_thumbnails/', blank=True, null=True, help_text='afbeelding te zien in de collectie overzicht')
@@ -50,26 +51,26 @@ class Collection(models.Model):
         return self.name
 
 class Rubric(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, db_index=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 class Subject(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True, db_index=True)
 
     def __str__(self):
         return self.name    
     
 class Document(models.Model):
-    title = models.CharField(max_length=255, blank=True, null=True, help_text='Vul dit in indien je een los document toevoegd. Als dit document onderdeel van een collectie is kun je dit veld leeglaten: de titel word automatisch bepaald.')
+    title = models.CharField(max_length=255, blank=True, null=True, help_text='Vul dit in indien je een los document toevoegd. Als dit document onderdeel van een collectie is kun je dit veld leeglaten: de titel word automatisch bepaald.', db_index=True)
     date_added = models.DateTimeField(default=timezone.now, db_index=True)
     publish_date = models.DateField(blank=True, null=True, db_index=True, help_text='datum van uitgave, publicatie datum')
     thumbnail = models.ImageField(upload_to='document_thumbnails/', blank=True, null=True)
     page_count = models.IntegerField(default=0)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    collection = models.ForeignKey(Collection, related_name='documents', on_delete=models.SET_NULL, null=True, blank=True)
+    collection = models.ForeignKey(Collection, related_name='documents', on_delete=models.SET_NULL, null=True, blank=True, db_index=True)
     rubric = models.ManyToManyField(Rubric, related_name='documents', blank=True)
     subject = models.ManyToManyField(Subject, related_name='documents', blank=True)
 
@@ -82,6 +83,8 @@ class Document(models.Model):
         elif not self.collection and not self.title:
             self.title = "Untitled Document"
         
+        cache.delete('documents')  # Clear the cache for documents after saving a document
+        
         super().save(*args, **kwargs)
         
     def __str__(self):
@@ -89,7 +92,7 @@ class Document(models.Model):
     
 class Page(models.Model):
     document = models.ForeignKey(Document, related_name='pages', on_delete=models.CASCADE)
-    text = models.CharField(max_length=10000, blank=True, null=True)
+    text = models.CharField(max_length=10000, blank=True, null=True, db_index=True)
     image = models.ImageField(upload_to='pages/')
     thumbnail = models.ImageField(upload_to='page_thumbnails/')
     page_number = models.IntegerField(default=1, db_index=True)

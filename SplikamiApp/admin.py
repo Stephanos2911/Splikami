@@ -12,6 +12,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.admin import AdminSite
 import threading
+from django.core.cache import cache
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser')
@@ -94,15 +95,27 @@ class CollectionAdmin(admin.ModelAdmin):
             inline_instances = [DocumentInline(self.model, self.admin_site)]
         return inline_instances
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        cache.delete('collections') # Clear the cache for collections after saving a collection
+
 # Admin configuration for rubric
 class RubricAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        cache.delete('rubrics')  # Clear the cache for rubrics after saving a rubric
+
 # Admin configuration for Subject
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        cache.delete('subjects')  # Clear the cache for subjects after saving a subject
     
 # Admin configuration for Document
 class DocumentAdminForm(forms.ModelForm):
@@ -157,6 +170,7 @@ class DocumentAdmin(admin.ModelAdmin):
             threading.Thread(target=background_task).start()
         
         super().save_model(request, obj, form, change)
+        cache.delete('documents')
         
     def get_readonly_fields(self, request, obj=None):
         if obj:

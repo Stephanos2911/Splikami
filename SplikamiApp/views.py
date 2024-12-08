@@ -16,6 +16,9 @@ from .forms import ContactForm, CustomUserCreationForm
 from icalendar import Calendar, Event
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
+from django.contrib.postgres.search import SearchVector
+from django.views.decorators.cache import cache_page
 
 def login_view(request):
     if request.method == "POST":
@@ -119,7 +122,9 @@ def archive(request):
     sort_field = data.get('sort', 'publish_date')
     sort_order = data.get('order', 'desc')
 
-    documents = Document.objects.all()
+    documents = Document.objects.select_related('collection').only(
+        'id', 'title', 'thumbnail', 'publish_date', 'page_count', 'collection__name'
+    )
 
     # Apply filters
     if rubric_name:
@@ -149,6 +154,22 @@ def archive(request):
     paginator = Paginator(documents, 9)
     page_obj = paginator.get_page(page_number)
 
+    # Cache rubrics, subjects, and collections
+    rubrics = cache.get('rubrics')
+    if not rubrics:
+        rubrics = list(Rubric.objects.only('id', 'name').all())
+        cache.set('rubrics', rubrics, 3600)  # Cache for 1 hour
+
+    subjects = cache.get('subjects')
+    if not subjects:
+        subjects = list(Subject.objects.only('id', 'name').all())
+        cache.set('subjects', subjects, 3600)
+
+    collections = cache.get('collections')
+    if not collections:
+        collections = list(Collection.objects.only('id', 'name').all())
+        cache.set('collections', collections, 3600)
+
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # Render the document list and pagination components
         html = render_to_string('SplikamiApp/_document_list.html', {'documents': page_obj}, request=request)
@@ -162,9 +183,9 @@ def archive(request):
         # Initial page load with documents included in context
         context = {
             'documents': page_obj,
-            'rubrics': Rubric.objects.all().order_by('name'),
-            'subjects': Subject.objects.all().order_by('name'),
-            'collections': Collection.objects.all().order_by('name'),
+            'rubrics': rubrics,
+            'subjects': subjects,
+            'collections': collections,
             'total_results': total_results,
             'current_filters': {
                 'rubric': rubric_name,
@@ -227,7 +248,10 @@ def archive_search(request):
 @login_required
 def view_document(request, id, page=1):
     # Include rubrics and subjects in the query
-    document = get_object_or_404(Document.objects.prefetch_related('rubric', 'subject').only('id', 'title', 'thumbnail', 'page_count'), pk=id)
+    document = get_object_or_404(
+        Document.objects.only('id', 'title', 'thumbnail', 'page_count'),
+        pk=id
+    )
     pages = document.pages.only('page_number', 'image', 'thumbnail', 'text').order_by('page_number')
 
     pages_data = [
@@ -235,7 +259,7 @@ def view_document(request, id, page=1):
             'page_number': page.page_number,
             'image': page.image.url,
             'thumbnail': page.thumbnail.url,
-            'text_snippet': page.text[:100] if page.text else ''  # Get the first 300 characters of the text
+            'text_snippet': page.text[:100] if page.text else ''  # Get the first 100 characters of the text
         }
         for page in pages
     ]
@@ -243,7 +267,7 @@ def view_document(request, id, page=1):
     pages_json = json.dumps(pages_data, cls=DjangoJSONEncoder)
 
     # Generate a range of page numbers
-    pages_range = range(1, document.pages.count() + 1)
+    pages_range = range(1, len(pages) + 1)
 
     return render(request, 'SplikamiApp/view_document.html', {
         'document': document,
@@ -293,12 +317,15 @@ def generate_ics(request, event_id):
     return response
 
 # Simple static pages
+@cache_page(60 * 60 * 24)
 def home(request):
     return render(request, 'SplikamiApp/home.html')
 
+@cache_page(60 * 60 * 24)
 def education(request):
     return render(request, 'SplikamiApp/education.html')
 
+@cache_page(60 * 60 * 24)  
 def aboutus(request):
     return render(request, 'SplikamiApp/about.html')
 

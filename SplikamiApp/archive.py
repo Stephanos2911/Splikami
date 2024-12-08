@@ -1,9 +1,10 @@
 from PIL import Image
-import pytesseract, io, fitz, time, os
-from .models import Document, Page
+import pytesseract, io, fitz, time
+from .models import Page
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import gc
 
 def time_function(func):
     def wrapper(*args, **kwargs):
@@ -13,7 +14,6 @@ def time_function(func):
         print(f"{func.__name__} executed in {end_time - start_time} seconds.")
         return result
     return wrapper
-        
 @time_function
 def handle_pdf(uploaded_file, document):
     doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
@@ -23,40 +23,45 @@ def handle_pdf(uploaded_file, document):
     first_page = doc.load_page(0)
     first_pixmap = first_page.get_pixmap(matrix=fitz.Matrix(300 / 72, 300 / 72), colorspace='rgb', alpha=False)
     first_image = Image.frombytes("RGB", (first_pixmap.width, first_pixmap.height), first_pixmap.samples)
-
     thumbnail_io = io.BytesIO()
     first_image.thumbnail((first_image.width * 75 / 300, first_image.height * 75 / 300))
     first_image.save(thumbnail_io, format='JPEG', quality=25)
     thumbnail_io.seek(0)
-
     document.page_count = total_pages
     document.thumbnail.save(f"{document.title}_thumbnail.jpg", ContentFile(thumbnail_io.getvalue()), save=False)
     document.save()
 
-    # Process pages one by one
-    for pageNum in range(total_pages):
-        page = doc.load_page(pageNum)
+    # Close and cleanup resources right after use
+    first_image.close()
+    first_pixmap = None
+    gc.collect()
 
+    def process_page(pageNum):
+        page = doc.load_page(pageNum)
         pixmap = page.get_pixmap(matrix=fitz.Matrix(300 / 72, 300 / 72), colorspace='rgb', alpha=False)
         image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
 
-        # Save the full image
+        # Save the full image directly without creating extra copies
         img_io = io.BytesIO()
         image.save(img_io, format='JPEG', quality=80)
         img_io.seek(0)
-        image_key = f"media/documents/{document.id}/{document.title}_page_{pageNum + 1}.jpg"
+        image_key = f"documents/{document.id}/{document.title}_page_{pageNum + 1}.jpg"
         default_storage.save(image_key, ContentFile(img_io.getvalue()))
 
-        # Create a low-quality thumbnail
+        # Create thumbnail from the same PIL image directly
         page_thumbnail_io = io.BytesIO()
-        image.thumbnail((image.width * 75 / 300, image.height * 75 / 300))
+        thumb_width = int(image.width * 75 / 300)
+        thumb_height = int(image.height * 75 / 300)
+        image.thumbnail((thumb_width, thumb_height))
         image.save(page_thumbnail_io, format='JPEG', quality=25)
         page_thumbnail_io.seek(0)
-        thumbnail_key = f"media/documents/{document.id}/{document.title}_page_{pageNum + 1}_thumbnail.jpg"
+        thumbnail_key = f"documents/{document.id}/{document.title}_page_{pageNum + 1}_thumbnail.jpg"
         default_storage.save(thumbnail_key, ContentFile(page_thumbnail_io.getvalue()))
 
-        # Perform OCR
-        extracted_text = performOCR(image)
+        # Perform OCR (on the in-memory downsampled image)
+        extracted_text = pytesseract.image_to_string(image.convert('L'))
+        if isinstance(extracted_text, tuple):
+            extracted_text = extracted_text[0]
 
         # Save the Page object
         page_obj = Page(
@@ -64,37 +69,45 @@ def handle_pdf(uploaded_file, document):
             text=extracted_text,
             page_number=pageNum + 1,
         )
-        # Save the full image using the model's FileField
         page_obj.image.save(f"{document.title}_page_{pageNum + 1}.jpg", ContentFile(img_io.getvalue()), save=False)
-
-        # Save the thumbnail using the model's FileField
         page_obj.thumbnail.save(f"{document.title}_page_{pageNum + 1}_thumbnail.jpg", ContentFile(page_thumbnail_io.getvalue()), save=False)
-
         page_obj.save()
 
         # Free memory after processing the page
         image.close()
-        del pixmap, image, img_io, page_thumbnail_io
         page = None
+        pixmap = None
+        img_io = None
+        page_thumbnail_io = None
+        gc.collect()
+
+    # Process pages concurrently
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(process_page, pageNum) for pageNum in range(total_pages)]
+        for future in as_completed(futures):
+            future.result()
 
     # Free up PDF resources
     doc.close()
 
-
+@time_function
 def handle_image(uploaded_file, document):
-    image = Image.open(uploaded_file)
+    uploaded_file.seek(0)  # Ensure the file pointer is at the start
+    file_content = uploaded_file.read()  # Read the file content into memory
+    image = Image.open(io.BytesIO(file_content))  # Open the image from the in-memory content
 
     # Save the original image
     img_io = io.BytesIO()
     image.save(img_io, format='PNG')
     img_io.seek(0)
-    extracted_text = performOCR(image)
+    extracted_text = pytesseract.image_to_string(image.convert('L'))
+    if isinstance(extracted_text, tuple):
+        extracted_text = extracted_text[0]
 
     # Create thumbnail
     thumbnail_io = io.BytesIO()
-    thumbnail_image = image.copy()
-    thumbnail_image.thumbnail((thumbnail_image.width * 75 / 300, thumbnail_image.height * 75 / 300))
-    thumbnail_image.save(thumbnail_io, format='PNG', quality=25)
+    image.thumbnail((image.width * 75 / 300, image.height * 75 / 300))
+    image.save(thumbnail_io, format='PNG', quality=25)
     thumbnail_io.seek(0)
 
     document.page_count = 1
@@ -116,8 +129,6 @@ def handle_image(uploaded_file, document):
 
     # Clean up
     image.close()
-    thumbnail_image.close()
-
-@time_function
-def performOCR(image):
-    return pytesseract.image_to_string(image, lang='nld+spa+por+fra+eng').lower()
+    thumbnail_io = None
+    img_io = None
+    gc.collect()

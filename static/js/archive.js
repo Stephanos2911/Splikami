@@ -22,6 +22,39 @@ function performSearch() {
     .catch(error => console.error('Error:', error));
 }
 
+// Debounce function to limit the rate of function calls
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Modify performSearch to use debounce
+const performSearchDebounced = debounce(function() {
+    var query = document.getElementById('search-input').value;
+    if (query.length === 0) {
+        document.getElementById('search-results').style.display = 'none';
+        return; // Hide search results if query is empty
+    }
+
+    var url = "/archive/search/?q=" + encodeURIComponent(query);
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        var resultsContainer = document.getElementById('search-results');
+        resultsContainer.style.display = 'block';
+        resultsContainer.innerHTML = data.html;
+    })
+    .catch(error => console.error('Error:', error));
+}, 300); // Adjust the debounce delay as needed
+
 document.addEventListener('DOMContentLoaded', function() {
     var searchInput = document.getElementById('search-input');
     var clearIcon = document.getElementById('clear-search-icon');
@@ -30,13 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     clearIcon.style.display = 'none';
 
     // Attach event listener to the input field
-    searchInput.addEventListener('input', function() {
-        if (searchInput.value.length > 0) {
-            clearIcon.style.display = 'inline-block';  // Show the "X" icon
-        } else {
-            clearIcon.style.display = 'none';  // Hide the "X" icon
-        }
-    });
+    searchInput.addEventListener('input', performSearchDebounced);
 
     // Attach click event to the clear icon
     clearIcon.addEventListener('click', function() {
@@ -75,7 +102,14 @@ function updateTotalResults(total) {
 }
 
 // Filter and sorting
+let isUpdatingDocuments = false;
+
 function updateDocumentList(page = 1) {
+    if (isUpdatingDocuments) {
+        return; // Prevent new requests while one is in progress
+    }
+    isUpdatingDocuments = true;
+
     var form = document.querySelector('#filter-form');
     var formData = new FormData(form);
 
@@ -102,8 +136,12 @@ function updateDocumentList(page = 1) {
         document.querySelector('#pagination').innerHTML = data.pagination_html;
         updateTotalResults(data.total_results);  // Update total results
         toggleResetButton();
+        isUpdatingDocuments = false;
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        isUpdatingDocuments = false;
+    });
 }
 
 // Function to reset all filters

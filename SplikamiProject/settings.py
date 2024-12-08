@@ -33,6 +33,14 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-splikami-cache',
+    }
+}
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
