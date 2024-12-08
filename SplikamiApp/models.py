@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.dateformat import DateFormat
 from django.core.validators import validate_email
 
+
 class Course(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()

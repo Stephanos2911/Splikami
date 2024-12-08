@@ -294,8 +294,6 @@ def generate_ics(request, event_id):
 
 # Simple static pages
 def home(request):
-    #log 
-    print("Home page acessed")
     return render(request, 'SplikamiApp/home.html')
 
 def education(request):

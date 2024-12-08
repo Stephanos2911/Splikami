@@ -38,6 +38,6 @@ CMD ["sh", "-c", "python manage.py collectstatic --noinput && \
     python manage.py makemigrations SplikamiApp && \
     python manage.py migrate && \
     echo \"from django.contrib.auth.models import User; \
-    User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists() or \
-    User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')\" | python manage.py shell && \
+    User.objects.filter(username='$DJANGO_SUPERUSER_EMAIL').exists() or \
+    User.objects.create_superuser('$DJANGO_SUPERUSER_EMAIL', '', '$DJANGO_SUPERUSER_PASSWORD')\" | python manage.py shell && \
     gunicorn SplikamiProject.wsgi:application --bind 0.0.0.0:8000"]
