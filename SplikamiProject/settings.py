@@ -177,4 +177,5 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
     CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
-    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
