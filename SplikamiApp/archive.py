@@ -1,19 +1,11 @@
 from PIL import Image
-import pytesseract, io, fitz, time
-from .models import Page
+import pytesseract, io, fitz, gc
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import gc
+from django.apps import apps
+from .utils import time_function
 
-def time_function(func):
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        print(f"{func.__name__} executed in {end_time - start_time} seconds.")
-        return result
-    return wrapper
 @time_function
 def handle_pdf(uploaded_file, document):
     doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
@@ -26,9 +18,10 @@ def handle_pdf(uploaded_file, document):
     thumbnail_io = io.BytesIO()
     first_image.thumbnail((first_image.width * 75 / 300, first_image.height * 75 / 300))
     first_image.save(thumbnail_io, format='JPEG', quality=25)
-    thumbnail_io.seek(0)
+    
+    # Set thumbnail data to document
     document.page_count = total_pages
-    document.thumbnail.save(f"{document.title}_thumbnail.jpg", ContentFile(thumbnail_io.getvalue()), save=False)
+    document._thumbnail_data = ContentFile(thumbnail_io.getvalue())
     document.save()
 
     # Close and cleanup resources right after use
@@ -37,40 +30,35 @@ def handle_pdf(uploaded_file, document):
     gc.collect()
 
     def process_page(pageNum):
+        # Get the Page model using get_model to avoid circular import
+        Page = apps.get_model('SplikamiApp', 'Page')
         page = doc.load_page(pageNum)
         pixmap = page.get_pixmap(matrix=fitz.Matrix(300 / 72, 300 / 72), colorspace='rgb', alpha=False)
         image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
 
-        # Save the full image directly without creating extra copies
+        # Prepare image data
         img_io = io.BytesIO()
         image.save(img_io, format='JPEG', quality=80)
-        img_io.seek(0)
-        image_key = f"documents/{document.id}/{document.title}_page_{pageNum + 1}.jpg"
-        default_storage.save(image_key, ContentFile(img_io.getvalue()))
+        
+        # Prepare thumbnail data
+        thumb_io = io.BytesIO()
+        image.thumbnail((image.width * 75 / 300, image.height * 75 / 300))
+        image.save(thumb_io, format='JPEG', quality=25)
 
-        # Create thumbnail from the same PIL image directly
-        page_thumbnail_io = io.BytesIO()
-        thumb_width = int(image.width * 75 / 300)
-        thumb_height = int(image.height * 75 / 300)
-        image.thumbnail((thumb_width, thumb_height))
-        image.save(page_thumbnail_io, format='JPEG', quality=25)
-        page_thumbnail_io.seek(0)
-        thumbnail_key = f"documents/{document.id}/{document.title}_page_{pageNum + 1}_thumbnail.jpg"
-        default_storage.save(thumbnail_key, ContentFile(page_thumbnail_io.getvalue()))
-
-        # Perform OCR (on the in-memory downsampled image)
+        # Extract text
         extracted_text = pytesseract.image_to_string(image.convert('L'))
         if isinstance(extracted_text, tuple):
             extracted_text = extracted_text[0]
 
-        # Save the Page object
+        # Create and save page object with the correct file data
         page_obj = Page(
             document=document,
             text=extracted_text,
             page_number=pageNum + 1,
         )
-        page_obj.image.save(f"{document.title}_page_{pageNum + 1}.jpg", ContentFile(img_io.getvalue()), save=False)
-        page_obj.thumbnail.save(f"{document.title}_page_{pageNum + 1}_thumbnail.jpg", ContentFile(page_thumbnail_io.getvalue()), save=False)
+        # Attach the file data to be handled by the model's save method
+        page_obj._image_data = ContentFile(img_io.getvalue())
+        page_obj._thumbnail_data = ContentFile(thumb_io.getvalue())
         page_obj.save()
 
         # Free memory after processing the page
@@ -78,7 +66,7 @@ def handle_pdf(uploaded_file, document):
         page = None
         pixmap = None
         img_io = None
-        page_thumbnail_io = None
+        thumb_io = None
         gc.collect()
 
     # Process pages concurrently
@@ -92,9 +80,11 @@ def handle_pdf(uploaded_file, document):
 
 @time_function
 def handle_image(uploaded_file, document):
-    uploaded_file.seek(0)  # Ensure the file pointer is at the start
-    file_content = uploaded_file.read()  # Read the file content into memory
-    image = Image.open(io.BytesIO(file_content))  # Open the image from the in-memory content
+    # Get the Page model using get_model to avoid circular import
+    Page = apps.get_model('SplikamiApp', 'Page')
+    uploaded_file.seek(0) 
+    file_content = uploaded_file.read()
+    image = Image.open(io.BytesIO(file_content)) 
 
     # Save the original image
     img_io = io.BytesIO()
@@ -119,12 +109,13 @@ def handle_image(uploaded_file, document):
         text=extracted_text,
         page_number=1,
     )
-    page.image.save(f"{document.title}.png", ContentFile(img_io.getvalue()), save=False)
-    page.thumbnail.save(f"{document.title}_thumbnail.png", ContentFile(thumbnail_io.getvalue()), save=False)
+    # Attach the file data to be handled by the model's save method
+    page._image_data = ContentFile(img_io.getvalue())
+    page._thumbnail_data = ContentFile(thumbnail_io.getvalue())
     page.save()
 
     # Set the document's thumbnail
-    document.thumbnail.save(f"{document.title}_thumbnail.png", ContentFile(thumbnail_io.getvalue()), save=False)
+    document._thumbnail_data = ContentFile(thumbnail_io.getvalue())
     document.save()
 
     # Clean up

@@ -4,7 +4,8 @@ from django.utils import timezone
 from django.utils.dateformat import DateFormat
 from django.core.validators import validate_email
 from django.core.cache import cache
-
+from django.core.files.base import ContentFile
+from .utils import document_thumbnail_path, page_file_path 
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
@@ -62,12 +63,23 @@ class Subject(models.Model):
 
     def __str__(self):
         return self.name    
-    
-class Document(models.Model):
+
+class FileHandlingMixin:
+    """Mixin to handle file attachments during save"""
+    def handle_file_field(self, field_name, content=None):
+        if hasattr(self, f'_{field_name}_data'):
+            file_field = getattr(self, field_name)
+            file_field.save(f'{field_name}.jpg', getattr(self, f'_{field_name}_data'), save=False)
+            delattr(self, f'_{field_name}_data')
+        elif content:
+            file_field = getattr(self, field_name)
+            file_field.save(f'{field_name}.jpg', ContentFile(content), save=False)
+
+class Document(FileHandlingMixin, models.Model):
     title = models.CharField(max_length=255, blank=True, null=True, help_text='Vul dit in indien je een los document toevoegd. Als dit document onderdeel van een collectie is kun je dit veld leeglaten: de titel word automatisch bepaald.', db_index=True)
     date_added = models.DateTimeField(default=timezone.now, db_index=True)
     publish_date = models.DateField(blank=True, null=True, db_index=True, help_text='datum van uitgave, publicatie datum')
-    thumbnail = models.ImageField(upload_to='document_thumbnails/', blank=True, null=True)
+    thumbnail = models.ImageField(upload_to=document_thumbnail_path, blank=True, null=True)
     page_count = models.IntegerField(default=0)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     collection = models.ForeignKey(Collection, related_name='documents', on_delete=models.SET_NULL, null=True, blank=True, db_index=True)
@@ -75,27 +87,36 @@ class Document(models.Model):
     subject = models.ManyToManyField(Subject, related_name='documents', blank=True)
 
     def save(self, *args, **kwargs):
-        # If the document is part of a collection and has a publish date
+        if self._state.adding:
+            super().save(*args, **kwargs)
+            
         if self.collection and self.publish_date:
             formatted_date = DateFormat(self.publish_date).format('d F Y')
             self.title = f"{self.collection.name}, {formatted_date}"
-        # If there's no collection, keep the manually entered title
         elif not self.collection and not self.title:
             self.title = "Untitled Document"
         
-        cache.delete('documents')  # Clear the cache for documents after saving a document
-        
+        self.handle_file_field('thumbnail')
         super().save(*args, **kwargs)
-        
+        cache.delete('documents')
+
     def __str__(self):
         return self.title or "Untitled Document"
     
-class Page(models.Model):
+class Page(FileHandlingMixin, models.Model):
     document = models.ForeignKey(Document, related_name='pages', on_delete=models.CASCADE)
     text = models.CharField(max_length=10000, blank=True, null=True, db_index=True)
-    image = models.ImageField(upload_to='pages/')
-    thumbnail = models.ImageField(upload_to='page_thumbnails/')
+    image = models.ImageField(upload_to=page_file_path)
+    thumbnail = models.ImageField(upload_to=page_file_path)
     page_number = models.IntegerField(default=1, db_index=True)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            super().save(*args, **kwargs)
+        
+        self.handle_file_field('image')
+        self.handle_file_field('thumbnail')
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.document.title}, page {self.page_number}"

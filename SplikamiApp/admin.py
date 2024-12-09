@@ -139,8 +139,30 @@ class DocumentAdminForm(forms.ModelForm):
     def clean_uploaded_file(self):
         uploaded_file = self.cleaned_data.get('uploaded_file')
         if uploaded_file:
-            if not uploaded_file.name.lower().endswith(('.pdf', '.png', '.jpg', '.jpeg')):
-                raise ValidationError('Invalid file type: only PDF and image files are allowed.')
+            # Get file extension and convert to lowercase
+            file_ext = uploaded_file.name.lower().split('.')[-1]
+            
+            # Define allowed extensions and their corresponding MIME types
+            ALLOWED_TYPES = {
+                'pdf': 'application/pdf',
+                'png': 'image/png',
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg'
+            }
+            
+            if file_ext not in ALLOWED_TYPES:
+                raise ValidationError(f'Invalid file extension. Allowed extensions are: {", ".join(ALLOWED_TYPES.keys())}')
+            
+            # Check MIME type
+            file_type = uploaded_file.content_type
+            if file_type not in ALLOWED_TYPES.values():
+                raise ValidationError(f'Invalid file type. File appears to be {file_type}')
+            
+            # Cross-validate extension with MIME type
+            expected_type = ALLOWED_TYPES[file_ext]
+            if file_type != expected_type:
+                raise ValidationError(f'File extension does not match its content type')
+            
         return uploaded_file
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -174,11 +196,14 @@ class DocumentAdmin(admin.ModelAdmin):
         
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ('page_count', 'added_by', 'date_added')  
+            return ('page_count', 'added_by', 'date_added', 'thumbnail')  
         return () 
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if obj:  # If editing an existing object
+            if 'uploaded_file' in form.base_fields:
+                del form.base_fields['uploaded_file']
         return form
 
     def document_thumbnail(self, obj):
