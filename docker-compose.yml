@@ -16,6 +16,7 @@ services:
       - web
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/ssl/private
     ports:
       - "80:80"
       - "443:443"
