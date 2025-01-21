@@ -17,7 +17,6 @@ from icalendar import Calendar, Event
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
-from django.contrib.postgres.search import SearchVector
 from django.views.decorators.cache import cache_page
 
 def login_view(request):
@@ -173,7 +172,7 @@ def archive(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # Render the document list and pagination components
         html = render_to_string('SplikamiApp/_document_list.html', {'documents': page_obj}, request=request)
-        pagination_html = render_to_string('SplikamiApp/_pagination.html', {'documents': page_obj}, request=request)
+        pagination_html = render_to_string('SplikamiApp/components/_pagination.html', {'documents': page_obj}, request=request)
         return JsonResponse({
             'html': html, 
             'pagination_html': pagination_html, 
@@ -317,7 +316,7 @@ def generate_ics(request, event_id):
     return response
 
 # Simple static pages
-@cache_page(60 * 60 * 24)
+# @cache_page(60 * 60 * 24)
 def home(request):
     return render(request, 'SplikamiApp/home.html')
 
@@ -325,7 +324,7 @@ def home(request):
 def education(request):
     return render(request, 'SplikamiApp/education.html')
 
-@cache_page(60 * 60 * 24)  
+# @cache_page(60 * 60 * 24)  
 def aboutus(request):
     return render(request, 'SplikamiApp/about.html')
 

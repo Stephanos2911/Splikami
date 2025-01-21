@@ -47,14 +47,14 @@
                         <span>Contact</span>
                     </button>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'logout_view' %}?next={{ request.path }}&logout=true" class="button is-info" id="logout-btn">
+                        <a href="{% url 'logout_view' %}?next={{ request.path }}&logout=true" class="button is-warning" id="logout-btn">
                             <span class="icon is-small">
                                 <i class="fas fa-sign-out-alt"></i>
                             </span>
                             <span>Log uit</span>
                         </a>
                     {% else %}
-                        <button class="button is-info" id="login-btn">
+                        <button class="button is-warning" id="login-btn">
                             <span class="icon is-small">
                                 <i class="fas fa-user"></i>
                             </span>

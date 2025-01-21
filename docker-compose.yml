@@ -16,7 +16,18 @@ services:
       - web
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./letsencrypt:/etc/letsencrypt:ro
     ports:
       - "80:80"
       - "443:443"
     restart: always
+
+  certbot:
+    image: certbot/certbot:latest
+    depends_on:
+      - web
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./nginx/conf.d:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html \
+      --domain splikami.cw --email ioannoustephanos2002@gmail.com --agree-tos --no-eff-email
