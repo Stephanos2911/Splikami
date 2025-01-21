@@ -30,4 +30,4 @@ services:
       - ./letsencrypt:/etc/letsencrypt
       - ./nginx/conf.d:/var/www/html
     command: certonly --webroot --webroot-path=/var/www/html \
-      --domain splikami.cw --email ioannoustephanos2002@gmail.com --agree-tos --no-eff-email
+      --domain splikami.cw --domain www.splikami.cw --email ioannoustephanos2002@gmail.com --agree-tos --no-eff-email
