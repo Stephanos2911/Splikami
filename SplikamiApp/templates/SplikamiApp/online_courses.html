@@ -20,27 +20,17 @@
             </div>
 
             <!-- Bulma tabs for both logged-in and non-authenticated users -->
-            {% if user.is_authenticated %}
             <div class="tabs is-boxed">
                 <ul style="margin-left: 0;">
+                    {% if user.is_authenticated %}
                     <li class="is-active" data-tab="my-courses-tab">
                         <a>
                             <span class="icon"><i class="fas fa-user-graduate"></i></span>
                             <span>Mijn Cursussen</span>
                         </a>
                     </li>
-                    <li data-tab="all-courses-tab">
-                        <a>
-                            <span class="icon"><i class="fas fa-book"></i></span>
-                            <span>Overige Cursussen</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            {% else %}
-            <div class="tabs is-boxed">
-                <ul style="margin-left: 0;">
-                    <li data-tab="all-courses-tab" class="is-active">
+                    {% endif %}
+                    <li class="{% if not user.is_authenticated %}is-active{% endif %}" data-tab="all-courses-tab">
                         <a>
                             <span class="icon"><i class="fas fa-book"></i></span>
                             <span>Alle Cursussen</span>
@@ -48,8 +38,6 @@
                     </li>
                 </ul>
             </div>
-            {% endif %}
-
             <!-- My Courses Tab -->
             {% if user.is_authenticated %}
             <div id="my-courses-tab" class="tab-content is-active">
@@ -74,10 +62,17 @@
                     </div>
                 {% endif %}
             </div>
+            {% else %}
+            <div id="my-courses-tab" class="tab-content">
+                <div class="notification">
+                    Je moet eerst een gebruiker bij Splikami worden om toegang te krijgen tot de cursussen. Neem contact op met Splikami voor meer informatie.
+                </div>
+            </div>
             {% endif %}
 
             <!-- All Courses Tab -->
-            <div id="all-courses-tab" class="tab-content">
+            <div id="all-courses-tab" class="tab-content {% if not user.is_authenticated %}is-active{% endif %}">
+                {% if all_courses %}
                 <div class="columns is-multiline">
                     {% for course in all_courses %}
                     <div class="column is-one-third">
@@ -92,6 +87,11 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% else %}
+                <div class="notification">
+                    Er zijn momenteel geen cursussen beschikbaar. Kom later terug voor nieuwe cursussen.
+                </div>
+                {% endif %}
             </div>
 
             <!-- Modals for courses -->
