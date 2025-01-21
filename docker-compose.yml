@@ -30,4 +30,5 @@ services:
     volumes:
       - ./letsencrypt:/etc/letsencrypt
       - ./nginx/conf.d:/var/www/html
-    command: sh -c "certbot certonly --webroot --webroot-path=/var/www/html --domain splikami.cw --domain www.splikami.cw --email ioannoustephanos2002@gmail.com --agree-tos --no-eff-email && nginx -s reload"
+    command: >
+      sh -c "certbot certonly --webroot --webroot-path=/var/www/html --domain splikami.cw --domain www.splikami.cw --email ioannoustephanos2002@gmail.com --agree-tos --no-eff-email && sleep 1 && nginx -s reload"
