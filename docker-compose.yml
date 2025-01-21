@@ -13,22 +13,12 @@ services:
     image: nginx:latest
     container_name: splikami_nginx
     depends_on:
-      - web
-      - certbot
+      - web 
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./letsencrypt:/etc/letsencrypt:ro
+      - ./certbot_challenges:/var/www/html
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - "80:80"
       - "443:443"
     restart: always
-
-  certbot:
-    image: certbot/certbot:latest
-    depends_on:
-      - web
-    volumes:
-      - ./letsencrypt:/etc/letsencrypt
-      - ./nginx/conf.d:/var/www/html
-    command: >
-      sh -c "certbot certonly --webroot --webroot-path=/var/www/html --domain splikami.cw --domain www.splikami.cw --email ioannoustephanos2002@gmail.com --agree-tos --no-eff-email && sleep 1 && nginx -s reload"
