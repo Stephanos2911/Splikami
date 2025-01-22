@@ -1,5 +1,4 @@
 import os
-import tarfile
 import boto3
 from datetime import datetime
 from pathlib import Path
@@ -17,24 +16,17 @@ AWS_REGION_NAME = 'us-east-1'
 # Define paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASE_PATH = BASE_DIR / 'database' / 'db.sqlite3'
-BACKUP_DIR = BASE_DIR / 'backups'
 
-# Ensure backup directory exists
-os.makedirs(BACKUP_DIR, exist_ok=True)
+def upload_to_s3():
+    """Upload the SQLite database directly to S3."""
+    if not DATABASE_PATH.exists():
+        raise FileNotFoundError(f"Database file not found at {DATABASE_PATH}")
 
-def create_backup():
-    """Create a timestamped backup of the SQLite database."""
+    # Generate a timestamped filename for the backup
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    backup_filename = f'backup/db_backup_{timestamp}.tar.gz'
-    backup_filepath = BACKUP_DIR / backup_filename
+    s3_filename = f"backups/db_backup_{timestamp}.sqlite3"
 
-    with tarfile.open(backup_filepath, 'w:gz') as tar:
-        tar.add(DATABASE_PATH, arcname=DATABASE_PATH.name)
-
-    return backup_filepath, backup_filename
-
-def upload_to_s3(file_path, file_name):
-    """Upload a file to AWS S3."""
+    # Initialize the S3 client
     s3_client = boto3.client(
         's3',
         aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -42,22 +34,18 @@ def upload_to_s3(file_path, file_name):
         region_name=AWS_REGION_NAME,
     )
 
-    s3_client.upload_file(str(file_path), AWS_BUCKET_NAME, file_name)
-    print(f'Uploaded {file_name} to S3 bucket {AWS_BUCKET_NAME}.')
+    # Upload the database file directly to S3
+    with open(DATABASE_PATH, 'rb') as db_file:
+        s3_client.upload_fileobj(db_file, AWS_BUCKET_NAME, s3_filename)
 
-def clean_local_backup(file_path):
-    """Remove the local backup file after upload."""
-    os.remove(file_path)
-    print(f'Removed local backup file: {file_path}')
+    print(f"Uploaded {s3_filename} to S3 bucket {AWS_BUCKET_NAME}.")
 
 def main():
-    """Main function to handle backup creation and upload."""
+    """Main function to handle the upload."""
     try:
-        backup_filepath, backup_filename = create_backup()
-        upload_to_s3(backup_filepath, backup_filename)
-        clean_local_backup(backup_filepath)
+        upload_to_s3()
     except Exception as e:
-        print(f'An error occurred: {e}')
+        print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
     main()
